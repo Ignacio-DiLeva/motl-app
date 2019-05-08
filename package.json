@@ -1,0 +1,30 @@
+{
+  "name": "motl-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ignacio-DiLeva/motl-app.git"
+  },
+  "keywords": [
+    "motl",
+    "app",
+    "motl-app"
+  ],
+  "author": "Ignacio Di Leva",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ignacio-DiLeva/motl-app/issues"
+  },
+  "homepage": "https://github.com/Ignacio-DiLeva/motl-app#readme",
+  "dependencies": {
+    "aws-sdk": "^2.451.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.16.4",
+    "mysql": "^2.17.1"
+  }
+}
