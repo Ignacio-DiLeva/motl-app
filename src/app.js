@@ -1,7 +1,7 @@
 'use strict';
 const AWS = require('aws-sdk');
 const bodyParser = require('body-parser');
-var mysql = require('mysql');
+const {Pool, Client} = require('pg')
 var express = require('express');
 
 AWS.config.update({region: 'us-east-1'});
@@ -9,19 +9,20 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 var s3 = new AWS.S3();
-var conn = mysql.createConnection({
-  host     : 'motl-app.cizpsjmh9r1h.us-east-1.rds.amazonaws.com',
-  user     : 'root',
-  password : '43442476mysql',
-  port     : 3306,
-  database : 'motl_app'
-});
-conn.connect((err) => {
-  if (err) {
-    console.error('Database connection failed: ' + err.stack);
-    throw err;
-  }
-});
+
+const connData = {
+  user: 'postgres',
+  host: 'ort-motl-app.cizpsjmh9r1h.us-east-1.rds.amazonaws.com',
+  database: 'ort_motl_app',
+  password: '43442476postgres',
+  port: 5432,
+};
+
+//const pool = new Pool(connData);
+const conn = new Client(connData);
+
+conn.connect();
+
 
 //SAMPLE UPLOAD
 /*
@@ -40,10 +41,9 @@ s3.getObject({Bucket: 'motl-app', Key: 'testfile.txt'}, (err, data) => {
 
 //SAMPLE QUERY
 /*
-conn.query('SELECT * FROM users', (err, result, fields) => {
+conn.query('SELECT * FROM users', (err, result) => {
   if (err) reject(err);
   res = result;
-  fieldData = fields;
 });
 */
 
@@ -52,9 +52,9 @@ function homepage(req, res, next){
   res.write('Hello ORT!\n\nTHIS IS A TEST PAGE, NOTHING TO DO HERE\n\n');
   new Promise((resolve, reject) => {
     let usersLocated = [];
-    conn.query('SELECT * FROM users', (err, result, fields) => {
+    conn.query('SELECT * FROM users', (err, result) => {
       if (err) return reject(err);
-      result.forEach(element => {
+      result.rows.forEach(element => {
         usersLocated.push(element.shown_username);
       });
       return resolve(usersLocated);
@@ -148,7 +148,7 @@ app.get('/public-files/:filename', getPublicFile, (req,res) => {});
 function register(req, res, next){
   new Promise((resolve, reject) => {
     conn.query('SELECT `username` FROM `users` WHERE `username` = "'
-    + req.query.username + '"', (err, result, fields) => {
+    + req.query.username + '"', (err, result) => {
       if (err) reject(err);
       return resolve(result);
     });
@@ -176,7 +176,7 @@ function register(req, res, next){
         conn.query('INSERT INTO `users` (`username`, `shown_username`, `password`) VALUES ("'
         + req.query.username + '", "'
         + req.query.shown_username + '", "'
-        + req.query.password + '")', (err, result, fields) => {
+        + req.query.password + '")', (err, result) => {
           if (err) {
             res.writeHeader(500, {'Content-Type': 'text/plain'});
             res.write('Registration failed');
