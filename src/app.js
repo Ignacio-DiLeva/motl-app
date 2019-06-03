@@ -12,7 +12,7 @@ var s3 = new AWS.S3();
 
 const connData = {
   user: 'postgres',
-  host: 'ort-motl-app.cizpsjmh9r1h.us-east-1.rds.amazonaws.com',
+  host: 'ort-motl-app.cwihmzkvtujm.us-east-1.rds.amazonaws.com',
   database: 'ort_motl_app',
   password: '43442476postgres',
   port: 5432,
