@@ -145,111 +145,11 @@ function getPublicFile(req, res, next){
 }
 app.get('/public-files/:filename', getPublicFile, (req,res) => {});
 
-function register(req, res, next){
-  new Promise((resolve, reject) => {
-    conn.query('SELECT `username` FROM `users` WHERE `username` = "'
-    + req.query.username + '"', (err, result) => {
-      if (err) reject(err);
-      return resolve(result);
-    });
-  }).then(
-    (result) => {
-      return new Promise((resolve, reject) => {
-        if (result.length == 0) return resolve(0);
-        res.writeHeader(409, {'Content-Type': 'text/plain'});
-        res.write('User already registered');
-        res.end();
-        return reject(409);
-      });
-    },
-    (error) => {
-      return new Promise((resolve, reject) => {
-        res.writeHeader(500, {'Content-Type': 'text/plain'});
-        res.write('Registration failed');
-        res.end();
-        return reject(500);
-      });
-    }
-  ).then(
-    (result) => {
-      return new Promise((resolve, reject) => {
-        conn.query('INSERT INTO `users` (`username`, `shown_username`, `password`) VALUES ("'
-        + req.query.username + '", "'
-        + req.query.shown_username + '", "'
-        + req.query.password + '")', (err, result) => {
-          if (err) {
-            res.writeHeader(500, {'Content-Type': 'text/plain'});
-            res.write('Registration failed');
-            res.end();
-            return reject(500);
-          }
-          return resolve(result);
-        });
-      });
-    },
-    (error) => {
-      return new Promise((resolve, reject) => {
-        return reject(error);
-      });
-    }
-  ).then(
-    (result) => {
-      return new Promise((resolve, reject) => {
-        res.writeHeader(201, {'Content-Type': 'text/plain'});
-        res.write('Registration successful');
-        res.end();
-        return resolve(0);
-      });
-    },
-    (error) => {
-      return new Promise((resolve, reject) => {
-        return resolve(error);
-      });
-    }
-  ).then(
-    () => {
-      return new Promise((resolve, reject) => {
-        next();
-        return resolve(0);
-      });
-    }
-  );
-}
-app.post('/register', register, (req, res) => {});
-
-function submitFile(req, res, next){
-  new Promise((resolve, reject) => {
-    s3.upload({Bucket: 'motl-app', Key: req.query.filename, Body: req.query.data}, (err, data) => {
-      if (err) return reject(err);
-      return resolve(data);
-    });
-  }).then(
-    (data) => {
-      return new Promise((resolve, reject) => {
-        res.writeHeader(201, {'Content-Type': 'text/plain'});
-        res.write('Submission successful');
-        res.end();
-        return resolve(0);
-      });
-    },
-    (error) => {
-      return new Promise((resolve, reject) => {
-        res.writeHeader(500, {'Content-Type': 'text/plain'});
-        res.write('Submission failed');
-        res.end();
-        return reject(500);
-      });
-    }
-  ).then(
-    () => {
-      return new Promise((resolve, reject) => {
-        next();
-        return resolve(0);
-      });
-    }
-  );
+function test(req, res, next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  res.end(JSON.stringify({'cookie' : '0123456789abcdef'}));
 }
 
-app.post('/submitFile', submitFile, (req, res) => {});
+app.get('/test', test, (req,res) => {});
 
 app.listen(80);

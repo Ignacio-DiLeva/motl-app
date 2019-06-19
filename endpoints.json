@@ -1,0 +1,95 @@
+{
+    "/" : [
+        {
+            "method" : "GET",
+            "expects" : {},
+            "returns" : {
+                "_code" : [
+                    "SUCCESS_EMPTY"
+                ]
+            }
+        }
+    ],
+    "/register" : [
+        {
+            "method" : "POST",
+            "expects" : {
+                "username" : "string",
+                "shown_username" : "string",
+                "password" : "string",
+                "email" : "string",
+                "phone" : "string"
+            },
+            "returns" : {
+                "_code" : [
+                    "SUCCESS",
+                    "ERROR_MISSING_PARAMETERS",
+                    "ERROR_USER_ALREADY_EXISTS",
+                    "ERROR_BAD_USERNAME",
+                    "ERROR_BAD_SHOWN_USERNAME",
+                    "ERROR_BAD_PASSWORD",
+                    "ERROR_BAD_EMAIL",
+                    "ERROR_BAD_PHONE"
+                ],
+                "cookie" : "string"
+            }
+        }
+    ],
+    "/login" : [
+        {
+            "method" : "POST",
+            "expects" : {
+                "username" : "string",
+                "password" : "string"
+            },
+            "returns" : {
+                "_code" : [
+                    "SUCCESS",
+                    "ERROR_MISSING_PARAMETERS",
+                    "ERROR_USER_NOT_FOUND",
+                    "ERROR_PASSWORD_INCORRECT"
+                ],
+                "cookie" : "string"
+            }
+        }
+    ],
+    "/password-reset" : [
+        {
+            "method" : "POST",
+            "expects" : {
+                "username" : "string"
+            },
+            "returns" : {
+                "_code" : [
+                    "SUCCESS",
+                    "ERROR_MISSING_PARAMETERS",
+                    "ERROR_USER_NOT_FOUND"
+                ]
+            }
+        },
+        {
+            "method" : "POST",
+            "expects" : {
+                "username" : "string",
+                "code" : "int",
+                "new-password" : "string"
+            },
+            "returns" : {
+                "_code" : [
+                    "SUCCESS",
+                    "ERROR_MISSING_PARAMETERS",
+                    "ERROR_USER_NOT_FOUND",
+                    "ERROR_BAD_CODE",
+                    "ERROR_BAD_PASSWORD"
+                ],
+                "cookie" : "string"
+            }
+        }
+    ],
+    "/homepage" : [
+        {
+
+        }
+    ]
+}
+
