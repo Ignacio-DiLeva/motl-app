@@ -1,50 +1,50 @@
 {
-    "users" : {
-        "id" : "bigserial",
-        "user" : "text",
-        "shown_user" : "text",
-        "password" : "text",
-        "session_id" : "bigint -> sessions.id",
-        "email" : "text",
-        "phone" : "text",
-        "chats" : "bigint[] -> chats.id*",
-        "permissions_id" : "int -> permissions.id",
-        "reset_password_id": "int -> password_reset.id"
-    },
-    "sessions" : {
-        "id" : "bigserial",
-        "timestamp" : "bigint",
-        "cookie" : "uuid NOT NULL DEFAULT gen_random_uuid()"
-    },
-    "permissions" : {
-        "id" : "bigserial",
-        "permissions" : "text"
-    },
-    "password_reset" : {
-        "id" : "bigserial",
-        "code" : "text",
-        "timestamp" : "bigint"
-    },
-    "chats" : {
-        "id" : "bigserial",
-        "users" : "bigint[] -> users.id*",
-        "chat_id" : "bigint -> chat.id"
-    },
-    "chat" : {
-        "id" : "bigserial",
-        "messages" : "bigint[] -> messages.id*"
-    },
-    "messages" : {
-        "id" : "bigserial",
-        "author" : "bigint -> users.id",
-        "timestamp_send": "bigint",
-        "timestamp_receive" : "bigint",
-        "resource" : "bigint -> message_resources.id"
-    },
-    "message_resources" : {
-        "id" : "bigserial",
-        "content_type": "text",
-        "path": "text | NULL",
-        "body": "text | NULL"
-    }
+  "users" : {
+    "id" : "bigserial",
+    "user" : "text",
+    "shown_user" : "text",
+    "password" : "text",
+    "session_id" : "bigint[] -> sessions.id*",
+    "email" : "text",
+    "phone" : "text",
+    "chats" : "bigint[] -> chats.id*",
+    "permissions_id" : "int -> permissions.id",
+    "reset_password_id": "int -> password_reset.id"
+  },
+  "sessions" : {
+    "id" : "bigserial",
+    "timestamp" : "bigint",
+    "cookie" : "uuid NOT NULL DEFAULT gen_random_uuid()"
+  },
+  "permissions" : {
+    "id" : "bigserial",
+    "permissions" : "text"
+  },
+  "password_reset" : {
+    "id" : "bigserial",
+    "code" : "text",
+    "timestamp" : "bigint"
+  },
+  "chats" : {
+    "id" : "bigserial",
+    "users" : "bigint[] -> users.id*",
+    "chat_id" : "bigint -> chat.id"
+  },
+  "chat" : {
+    "id" : "bigserial",
+    "messages" : "bigint[] -> messages.id*"
+  },
+  "messages" : {
+    "id" : "bigserial",
+    "author" : "bigint -> users.id",
+    "timestamp_send": "bigint",
+    "timestamp_receive" : "bigint",
+    "resource" : "bigint -> message_resources.id"
+  },
+  "message_resources" : {
+    "id" : "bigserial",
+    "content_type": "text",
+    "path": "text | NULL",
+    "body": "text | NULL"
+  }
 }

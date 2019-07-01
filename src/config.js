@@ -1,4 +1,5 @@
 'use strict'
+let nodemailer = require('nodemailer');
 
 var config = {};
 
@@ -14,6 +15,14 @@ config.permissions = {
   USER: "",
   ADMIN: ""
 }
+
+config.mailTransporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'ort.motl.app@gmail.com',
+    pass: '43442476motlapp'
+    }
+ });
 
 config.emptyPasswordReset = 0;
 

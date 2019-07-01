@@ -2,13 +2,13 @@
 let config = require('./config');
 
 class TimeBroker{
-    constructor(){
+  constructor(){
 
-    }
+  }
 
-    getUnixTime(){
-        return Math.round((new Date()).getTime() / 1000);
-    }
+  getUnixTime(){
+    return Math.round((new Date()).getTime() / 1000);
+  }
 }
 
 module.exports = new TimeBroker();

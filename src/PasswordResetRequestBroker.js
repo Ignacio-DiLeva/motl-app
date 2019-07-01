@@ -37,7 +37,7 @@ class PasswordResetRequestBroker{
             );
           }
         },
-        (err) => {reject("ERROR_USER_NOT_FOUND");}
+        () => {reject("ERROR_USER_NOT_FOUND");}
       );
     });
   }
