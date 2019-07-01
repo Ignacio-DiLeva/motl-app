@@ -1,8 +1,9 @@
 'use strict';
 const AWS = require('aws-sdk');
 const bodyParser = require('body-parser');
-const {Pool, Client} = require('pg')
+const {Pool, Client} = require('pg');
 var express = require('express');
+require('./DatabaseBroker');
 
 AWS.config.update({region: 'us-east-1'});
 var app = express();
