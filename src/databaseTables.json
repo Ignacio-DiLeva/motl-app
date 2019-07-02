@@ -4,7 +4,7 @@
     "user" : "text",
     "shown_user" : "text",
     "password" : "text",
-    "session_id" : "bigint[] -> sessions.id*",
+    "session_ids" : "bigint[] -> sessions.id*",
     "email" : "text",
     "phone" : "text",
     "chats" : "bigint[] -> chats.id*",
@@ -14,7 +14,7 @@
   "sessions" : {
     "id" : "bigserial",
     "timestamp" : "bigint",
-    "cookie" : "uuid NOT NULL DEFAULT gen_random_uuid()"
+    "cookie" : "text"
   },
   "permissions" : {
     "id" : "bigserial",

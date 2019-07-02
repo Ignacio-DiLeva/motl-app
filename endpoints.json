@@ -29,7 +29,8 @@
           "ERROR_BAD_SHOWN_USERNAME",
           "ERROR_BAD_PASSWORD",
           "ERROR_BAD_EMAIL",
-          "ERROR_BAD_PHONE"
+          "ERROR_BAD_PHONE",
+          "ERROR_USER_ALREADY_LOGGED_IN"
         ],
         "cookie" : "string"
       }
@@ -47,7 +48,8 @@
           "SUCCESS",
           "ERROR_MISSING_PARAMETERS",
           "ERROR_USER_NOT_FOUND",
-          "ERROR_PASSWORD_INCORRECT"
+          "ERROR_PASSWORD_INCORRECT",
+          "ERROR_USER_ALREADY_LOGGED_IN"
         ],
         "cookie" : "string"
       }
@@ -74,7 +76,7 @@
       "expects" : {
         "username" : "string",
         "code" : "int",
-        "new-password" : "string"
+        "new_password" : "string"
       },
       "returns" : {
         "_code" : [
@@ -82,6 +84,8 @@
           "ERROR_MISSING_PARAMETERS",
           "ERROR_USER_NOT_FOUND",
           "ERROR_BAD_CODE",
+          "ERROR_INCORRECT_CODE",
+          "ERROR_OUT_OF_TIME",
           "ERROR_BAD_PASSWORD"
         ],
         "cookie" : "string"

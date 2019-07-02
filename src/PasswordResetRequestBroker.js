@@ -1,7 +1,6 @@
 'use strict'
 let config = require('./config');
 let db = require('./DatabaseBroker');
-let login = require("./LoginBroker");
 let email = require("./EMailBroker");
 let time = require("./TimeBroker");
 let randomstring = require("randomstring");
@@ -13,7 +12,7 @@ class PasswordResetRequestBroker{
 
   requestReset(user){
     return new Promise((resolve, reject) => {
-      login.returnUserData(user).then(
+      this.db.returnUserData(user).then(
         (data) => {
           let reset_id = data.password_reset_id;
           let code = this.generateCode();

@@ -2,6 +2,7 @@
 let db = require('./DatabaseBroker');
 let crypto = require("./CryptoBroker");
 let config = require('./config');
+let login = require("./LoginBroker");
 
 class RegisterBroker{
   constructor(db){
@@ -27,7 +28,12 @@ class RegisterBroker{
             reject("ERROR_INTERNAL");
           let registerQuery = "INSERT INTO users (username, shown_username, password, session_id, email, phone, permissions_id, password_reset_id) VALUES ('" + user + "','" + shownUser +"','" + hash + "'," + "0,'" + email + "','" + phone + "'," + "{}" + ",'" + config.permissions.USER + "," + '0' +")";
           db.query(registerQuery).then(
-            () => {resolve("SUCCESS");},
+            () => {
+              login.login(user, password).then(
+                (cookie) => {resolve(cookie);},
+                (err) => {reject(err);}
+              );
+            },
             () => {reject("ERROR_INTERNAL");}
           );
         },

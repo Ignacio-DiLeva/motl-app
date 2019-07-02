@@ -24,6 +24,10 @@ config.mailTransporter = nodemailer.createTransport({
     }
  });
 
+config.cookieSecret = "AN9tl1xPQ06mM2Yc"
+
+config.secsInDay = 86400;
+
 config.emptyPasswordReset = 0;
 
 config.passwordResetMailSubject = 'Password reset for MOTL_APP'

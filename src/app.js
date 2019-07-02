@@ -1,9 +1,15 @@
 'use strict';
 const AWS = require('aws-sdk');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+app.use(cookieParser(config.cookieSecret));
 const {Pool, Client} = require('pg');
 var express = require('express');
-require('./DatabaseBroker');
+
+const loginBroker = require("./LoginBroker");
+const registerBroker = require('./RegisterBroker');
+const passwordResetRequestBroker = require("./PasswordResetRequestBroker");
+const passwordResetSubmitBroker = require("./PasswordResetSubmitBroker");
 
 AWS.config.update({region: 'us-east-1'});
 var app = express();
@@ -25,30 +31,7 @@ const conn = new Client(connData);
 conn.connect();
 
 
-//SAMPLE UPLOAD
-/*
-s3.upload({Bucket: 'motl-app', Key: 'testfile.txt', Body: 'S3 file text'}, (err, data) => {
-  if (err) throw err;
-});
-*/
-
-//SAMPLE DOWNLOAD
-/*
-s3.getObject({Bucket: 'motl-app', Key: 'testfile.txt'}, (err, data) => {
-  if (err) reject(err);
-  filedata = data.Body.toString();
-});
-*/
-
-//SAMPLE QUERY
-/*
-conn.query('SELECT * FROM users', (err, result) => {
-  if (err) reject(err);
-  res = result;
-});
-*/
-
-function homepage(req, res, next){
+function rootPage(req, res, next){
   res.writeHeader(200, {'Content-Type': 'text/plain'});
   res.write('Hello ORT!\n\nTHIS IS A TEST PAGE, NOTHING TO DO HERE\n\n');
   new Promise((resolve, reject) => {
@@ -111,40 +94,66 @@ function homepage(req, res, next){
     }
   );
 }
-app.get('/', homepage, (req,res) => {});
+app.get('/', rootPage, (req,res) => {});
 
-function getPublicFile(req, res, next){
-  new Promise((resolve, reject) => {
-    s3.getObject({Bucket: 'motl-app', Key: req.params.filename}, (err, data) => {
-      if (err) return reject(err);
-      return resolve(data.Body.toString());
-    });
-  }).then(
-    (filedata) => {
-      return new Promise((resolve, reject) => {
-        res.writeHeader(200, {'Content-Type': 'text/plain'});
-        res.write(filedata);
-        return resolve(0);
-      });
+function login(req, res, next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  if(!!req.cookies["ORT_MOTL_APP"]){
+    res.end(JSON.stringify({'_code' : "ERROR_USER_ALREADY_LOGGED_IN"}));
+  }
+  await loginBroker.login(req.query.username, req.query.password).then(
+    (cookie) => {
+      res.cookie("ORT_MOTL_APP", cookie);
+      res.end(JSON.stringify({'_code' : "SUCCESS"}));
     },
-    (error) => {
-      return new Promise((resolve, reject) => {
-        res.writeHeader(404, {'Content-Type': 'text/plain'});
-        res.write(' ');
-        return resolve(404);
-      });
-    }
-  ).then(
-    () => {
-      return new Promise((resolve, reject) => {
-        res.end();
-        next();
-        return resolve(0);
-      });
+    (err) => {
+      res.end(JSON.stringify({'_code' : err.toString()}));
     }
   );
 }
-app.get('/public-files/:filename', getPublicFile, (req,res) => {});
+
+app.post('/login', login, (req,res) => {});
+
+function register(req, res, next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  if(!!req.cookies["ORT_MOTL_APP"]){
+    res.end(JSON.stringify({'_code' : "ERROR_USER_ALREADY_LOGGED_IN"}));
+  }
+  await registerBroker.register(req.query.username, req.query.shown_username, req.query.password, req.query.email, req.query.phone).then(
+    (cookie) => {
+      res.cookie("ORT_MOTL_APP", cookie);
+      res.end(JSON.stringify({'_code' : "SUCCESS"}));
+    },
+    (err) => {
+      res.end(JSON.stringify({'_code' : err.toString()}));
+    }
+  );
+}
+
+app.post('/register', register, (req,res) => {});
+
+function passwordResetRequest(req, res, next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  passwordResetRequestBroker.requestReset(req.query.username).then(
+    () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post('/password-reset-request', passwordResetRequest, (req,res) => {});
+
+function passwordResetSubmit(req, res, next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  passwordResetSubmitBroker.requestReset(req.query.username, req.query.code, req.query.new_password).then(
+    (cookie) => {
+      res.cookie("ORT_MOTL_APP", cookie);
+      res.end(JSON.stringify({'_code' : "SUCCESS"}));
+    },
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post('/password-reset-submit', passwordResetSubmit, (req,res) => {});
 
 function test(req, res, next){
   res.writeHeader(200, {'Content-Type': 'application/json'});

@@ -1,8 +1,9 @@
 'use strict'
 let config = require('./config');
+let login = require('./LoginBroker');
 let db = require('./DatabaseBroker');
-let login = require("./LoginBroker");
-let email = require("./EMailBroker");
+let time = require('./TimeBroker');
+let crypto = require("./TimeBroker");
 
 class PasswordResetSubmitBroker{
   constructor(db){
@@ -11,12 +12,33 @@ class PasswordResetSubmitBroker{
 
   submitReset(user, code, new_password){
     return new Promise((resolve, reject) => {
-      login.returnUserData(user).then(
+      if(!this.db.checkPassword(password))
+        reject("BAD_PASSWORD");
+      this.db.returnUserData(user).then(
         (data) => {
-          db.query("SELECT * from password_reset WHERE id = " + data.password_reset_id).then(
+          db.query("SELECT * FROM password_reset WHERE id = " + data.password_reset_id).then(
             (result) => {
-              
-              reject("TODO");
+              if(result[0].code !== code){
+                reject("ERROR_INCORRECT_CODE");
+              }
+              if(result[0].timestamp < time.getUnixTime()){
+                reject("ERROR_OUT_OF_TIME");
+              }
+
+              db.query("DELETE * FROM password_reset WHERE id = " + data.password_reset_id).then(
+                () => {
+                  this.updatePassword(user, new_password).then(
+                    () => {
+                      login.login(user, new_password).then(
+                        (cookie) => {resolve(cookie);},
+                        (err) => {reject(err);}
+                      );
+                    },
+                    (err) => {reject(err);}
+                  );
+                },
+                (err) => {reject(err);}
+              );
             },
             (err) => {reject("ERROR_USER_NOT_FOUND");}
           )
@@ -27,15 +49,7 @@ class PasswordResetSubmitBroker{
   }
 
   updatePassword(user, password){
-    return new Promise((resolve, reject) => {
-      this.db.query("UPDATE users set (password) VALUES ('" + password + "')").then(
-        () => {
-
-          resolve("SUCCESS");
-        },
-        (err) => {reject(err);}
-      )
-    });
+    return this.db.query("UPDATE users set (password, reset_password_id) VALUES ('" + crypto.hash(password) + "', 0) WHERE username = '" + user + "'");
   }
 }
 

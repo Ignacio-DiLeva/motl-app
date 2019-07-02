@@ -1,6 +1,7 @@
 'use strict'
 let db = require('./DatabaseBroker');
 let crypto = require("./CryptoBroker");
+let cookieBroker = require("./CookieBroker");
 let config = require('./config');
 
 class LoginBroker{
@@ -14,11 +15,14 @@ class LoginBroker{
         reject("BAD_USER");
       if(!this.db.checkPassword(password))
         reject("BAD_PASSWORD");
-      this.returnUserData(user).then(
+      this.db.returnUserData(user).then(
         (data) => {
           let passwordCheck = await crypto.passwordCheck(data.password, password);
           if(passwordCheck){
-            resolve("SUCCESS");
+            cookieBroker.setCookie(user, null).then(
+              (cookie) => {resolve(cookie);},
+              (err) => {reject(err);}
+            );
           }
           reject("ERROR_PASSWORD_INCORRECT");
         },
@@ -27,21 +31,6 @@ class LoginBroker{
         }
       )
     });
-  }
-  
-  returnUserData(user){
-    return new Promise((resolve, reject) => {
-      if(!this.db.checkUser(user))
-        reject("BAD_USER");
-      this.db.query("SELECT * FROM users WHERE user = '" + user + "'").then(
-        (result) => {
-          if(result.rowCount == 1)
-            resolve(result.rows[0]);
-          reject("ERROR_USER_NOT_FOUND");
-        },
-        (err) => {reject(err);}
-      );
-    })
   }
 }
 
