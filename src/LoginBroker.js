@@ -9,7 +9,7 @@ class LoginBroker{
     this.db = db;
   }
   
-  login(user, password){
+  login(user, password, cookie){
     return new Promise((resolve, reject) => {
       if(!this.db.checkUser(user))
         reject("BAD_USER");
@@ -17,19 +17,25 @@ class LoginBroker{
         reject("BAD_PASSWORD");
       this.db.returnUserData(user).then(
         (data) => {
-          let passwordCheck = await crypto.passwordCheck(data.password, password);
-          if(passwordCheck){
-            cookieBroker.setCookie(user, null).then(
-              (cookie) => {resolve(cookie);},
-              (err) => {reject(err);}
-            );
-          }
-          reject("ERROR_PASSWORD_INCORRECT");
+          crypto.checkHashMatch(data.password, password).then(
+            (passwordCheck) => {
+              if(passwordCheck){
+                cookieBroker.setCookie(user, cookie).then(
+                  (cookie) => {resolve(cookie);},
+                  (err) => {reject(err);}
+                );
+              }
+              else{
+                reject("ERROR_PASSWORD_INCORRECT");
+              }
+            },
+            (err) => {reject(err);}
+          );
         },
         () => {
           reject("ERROR_USER_NOT_FOUND");
         }
-      )
+      );
     });
   }
 }

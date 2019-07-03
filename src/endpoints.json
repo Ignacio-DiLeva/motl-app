@@ -75,7 +75,7 @@
       "method" : "POST",
       "expects" : {
         "username" : "string",
-        "code" : "int",
+        "code" : "string",
         "new_password" : "string"
       },
       "returns" : {

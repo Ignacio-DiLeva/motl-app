@@ -2,7 +2,7 @@
 let db = require('./DatabaseBroker');
 let crypto = require("./CryptoBroker");
 let config = require('./config');
-let login = require("./LoginBroker");
+let cookieBroker = require("./CookieBroker");
 
 class RegisterBroker{
   constructor(db){
@@ -22,25 +22,29 @@ class RegisterBroker{
       if(!this.db.checkPhone(phone))
         reject("BAD_PHONE");
       this.checkUserExists(user).then(
-        () => {
-          hash = await crypto.hash(password);
-          if(typeof(hash) !== 'string')
-            reject("ERROR_INTERNAL");
-          let registerQuery = "INSERT INTO users (username, shown_username, password, session_id, email, phone, permissions_id, password_reset_id) VALUES ('" + user + "','" + shownUser +"','" + hash + "'," + "0,'" + email + "','" + phone + "'," + "{}" + ",'" + config.permissions.USER + "," + '0' +")";
-          db.query(registerQuery).then(
-            () => {
-              login.login(user, password).then(
-                (cookie) => {resolve(cookie);},
+        (exists) => {
+          if(exists)
+            reject("USER_ALREADY_EXISTS");
+          crypto.hash(password).then(
+            (hash) => {
+              if(typeof(hash) !== 'string')
+                reject("ERROR_INTERNAL_HASH_NOT_STRING");
+              let registerQuery = "INSERT INTO users (username, shown_username, password, session_ids, email, phone, chats, permissions_id, password_reset_id) VALUES ('" + user + "','" + shownUser +"','" + hash + "',array[]::bigint[],'" + email + "','" + phone + "',array[]::bigint[]," + config.permissions.USER + ",0)";
+              this.db.query(registerQuery).then(
+                () => {
+                  cookieBroker.setCookie(user, null).then(
+                    (cookie) => {resolve(cookie);},
+                    (err) => {reject(err);}
+                  );
+                },
                 (err) => {reject(err);}
               );
             },
-            () => {reject("ERROR_INTERNAL");}
+            (err) => {reject(err);}
           );
         },
-        () => {
-          reject("USER_ALREADY_EXISTS");
-        }
-      )
+        (err) => {reject(err);}
+      );
     });
   }
   
@@ -48,13 +52,13 @@ class RegisterBroker{
     return new Promise((resolve, reject) => {
       if(!this.db.checkUser(user))
         reject("BAD_USER");
-      this.db.query("SELECT * FROM users WHERE user = '" + user + "'").then(
+      this.db.query("SELECT * FROM users WHERE username = '" + user + "'").then(
         (result) => {
           resolve(result.rowCount > 0);
         },
         (err) => {reject(err);}
       );
-    })
+    });
   }
 }
 

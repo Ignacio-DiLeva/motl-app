@@ -15,7 +15,7 @@ class CryptoBroker{
         (err) => {
           reject(err);
         }
-      )
+      );
     });
   }
 

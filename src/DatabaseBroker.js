@@ -1,5 +1,6 @@
 'use strict'
 let config = require('./config');
+const { Client } = require('pg');
 
 class DatabaseBroker{
   constructor(connData){
@@ -18,9 +19,9 @@ class DatabaseBroker{
 
   returnUserData(user){
     return new Promise((resolve, reject) => {
-      if(!this.db.checkUser(user))
+      if(!this.checkUser(user))
         reject("BAD_USER");
-      this.query("SELECT * FROM users WHERE user = '" + user + "'").then(
+      this.query("SELECT * FROM users WHERE username = '" + user + "'").then(
         (result) => {
           if(result.rowCount == 1)
             resolve(result.rows[0]);
@@ -28,7 +29,7 @@ class DatabaseBroker{
         },
         (err) => {reject(err);}
       );
-    })
+    });
   }
 
   checkStr(str){
@@ -38,14 +39,12 @@ class DatabaseBroker{
 
   checkUser(str){
     if(!this.checkStr(str)) return false;
-    const l = String.length(str);
-    return l > 0 && l <= 72;
+    return str.length > 0 && str.length <= 72;
   }
 
   checkPassword(str){
     if(!this.checkStr(str)) return false;
-    const l = String.length(str);
-    return l >= 8 && l <= 72;
+    return str.length >= 8 && str.length <= 72;
   }
 
   checkEmail(str){

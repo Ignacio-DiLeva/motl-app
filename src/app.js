@@ -1,8 +1,8 @@
 'use strict';
+let config = require('./config');
 const AWS = require('aws-sdk');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-app.use(cookieParser(config.cookieSecret));
 const {Pool, Client} = require('pg');
 var express = require('express');
 
@@ -15,18 +15,11 @@ AWS.config.update({region: 'us-east-1'});
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser(config.cookieSecret));
 var s3 = new AWS.S3();
 
-const connData = {
-  user: 'postgres',
-  host: 'ort-motl-app.cwihmzkvtujm.us-east-1.rds.amazonaws.com',
-  database: 'ort_motl_app',
-  password: '43442476postgres',
-  port: 5432,
-};
-
 //const pool = new Pool(connData);
-const conn = new Client(connData);
+const conn = new Client(config.connData);
 
 conn.connect();
 
@@ -97,16 +90,15 @@ function rootPage(req, res, next){
 app.get('/', rootPage, (req,res) => {});
 
 function login(req, res, next){
-  res.writeHeader(200, {'Content-Type': 'application/json'});
-  if(!!req.cookies["ORT_MOTL_APP"]){
-    res.end(JSON.stringify({'_code' : "ERROR_USER_ALREADY_LOGGED_IN"}));
-  }
-  await loginBroker.login(req.query.username, req.query.password).then(
+  console.log(req.cookies["ORT_MOTL_APP"]);
+  loginBroker.login(req.body.username, req.body.password, req.cookies["ORT_MOTL_APP"]).then(
     (cookie) => {
-      res.cookie("ORT_MOTL_APP", cookie);
+      res.cookie("ORT_MOTL_APP", cookie, config.cookieConfig);
+      res.writeHeader(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify({'_code' : "SUCCESS"}));
     },
     (err) => {
+      res.writeHeader(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify({'_code' : err.toString()}));
     }
   );
@@ -115,16 +107,18 @@ function login(req, res, next){
 app.post('/login', login, (req,res) => {});
 
 function register(req, res, next){
-  res.writeHeader(200, {'Content-Type': 'application/json'});
   if(!!req.cookies["ORT_MOTL_APP"]){
+    res.writeHeader(200, {'Content-Type': 'application/json'});
     res.end(JSON.stringify({'_code' : "ERROR_USER_ALREADY_LOGGED_IN"}));
   }
-  await registerBroker.register(req.query.username, req.query.shown_username, req.query.password, req.query.email, req.query.phone).then(
+  registerBroker.register(req.body.username, req.body.shown_username, req.body.password, req.body.email, req.body.phone).then(
     (cookie) => {
-      res.cookie("ORT_MOTL_APP", cookie);
+      res.cookie("ORT_MOTL_APP", cookie, config.cookieConfig);
+      res.writeHeader(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify({'_code' : "SUCCESS"}));
     },
     (err) => {
+      res.writeHeader(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify({'_code' : err.toString()}));
     }
   );
@@ -134,7 +128,7 @@ app.post('/register', register, (req,res) => {});
 
 function passwordResetRequest(req, res, next){
   res.writeHeader(200, {'Content-Type': 'application/json'});
-  passwordResetRequestBroker.requestReset(req.query.username).then(
+  passwordResetRequestBroker.requestReset(req.body.username).then(
     () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
     (err) => {res.end(JSON.stringify({'_code' : err}));}
   );
@@ -143,13 +137,16 @@ function passwordResetRequest(req, res, next){
 app.post('/password-reset-request', passwordResetRequest, (req,res) => {});
 
 function passwordResetSubmit(req, res, next){
-  res.writeHeader(200, {'Content-Type': 'application/json'});
-  passwordResetSubmitBroker.requestReset(req.query.username, req.query.code, req.query.new_password).then(
+  passwordResetSubmitBroker.submitReset(req.body.username, req.body.code, req.body.new_password).then(
     (cookie) => {
-      res.cookie("ORT_MOTL_APP", cookie);
+      res.cookie("ORT_MOTL_APP", cookie, config.cookieConfig);
+      res.writeHeader(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify({'_code' : "SUCCESS"}));
     },
-    (err) => {res.end(JSON.stringify({'_code' : err}));}
+    (err) => {
+      res.writeHeader(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({'_code' : err}));
+    }
   );
 }
 

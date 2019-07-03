@@ -1,9 +1,9 @@
 'use strict'
 let config = require('./config');
-let login = require('./LoginBroker');
 let db = require('./DatabaseBroker');
 let time = require('./TimeBroker');
-let crypto = require("./TimeBroker");
+let crypto = require("./CryptoBroker");
+let cookieBroker = require("./CookieBroker");
 
 class PasswordResetSubmitBroker{
   constructor(db){
@@ -12,44 +12,45 @@ class PasswordResetSubmitBroker{
 
   submitReset(user, code, new_password){
     return new Promise((resolve, reject) => {
-      if(!this.db.checkPassword(password))
+      if(!this.db.checkPassword(new_password))
         reject("BAD_PASSWORD");
       this.db.returnUserData(user).then(
         (data) => {
           db.query("SELECT * FROM password_reset WHERE id = " + data.password_reset_id).then(
             (result) => {
-              if(result[0].code !== code){
+              if(result.rows[0].code !== code){
                 reject("ERROR_INCORRECT_CODE");
               }
-              if(result[0].timestamp < time.getUnixTime()){
+              else if(parseInt(result.rows[0].timestamp) < time.getUnixTime()){
                 reject("ERROR_OUT_OF_TIME");
               }
-
-              db.query("DELETE * FROM password_reset WHERE id = " + data.password_reset_id).then(
-                () => {
-                  this.updatePassword(user, new_password).then(
-                    () => {
-                      login.login(user, new_password).then(
-                        (cookie) => {resolve(cookie);},
-                        (err) => {reject(err);}
-                      );
-                    },
-                    (err) => {reject(err);}
-                  );
-                },
-                (err) => {reject(err);}
-              );
+              else{
+                db.query("DELETE FROM password_reset WHERE id = " + data.password_reset_id).then(
+                  () => {
+                    this.updatePassword(user, new_password).then(
+                      () => {
+                        cookieBroker.setCookie(user, null).then(
+                          (cookie) => {resolve(cookie);},
+                          (err) => {reject(err);}
+                        );
+                      },
+                      (err) => {reject(err);}
+                    );
+                  },
+                  (err) => {reject(err);}
+                );
+              }
             },
             (err) => {reject("ERROR_USER_NOT_FOUND");}
-          )
+          );
         },
         (err) => {reject(err);}
-      )
-    })
+      );
+    });
   }
 
   updatePassword(user, password){
-    return this.db.query("UPDATE users set (password, reset_password_id) VALUES ('" + crypto.hash(password) + "', 0) WHERE username = '" + user + "'");
+    return this.db.query("UPDATE users SET password = '"  + crypto.hash(password) + "', password_reset_id = " + config.emptyPasswordReset + "WHERE username = '" + user + "'");
   }
 }
 

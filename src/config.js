@@ -12,8 +12,8 @@ config.connData = {
 };
 
 config.permissions = {
-  USER: "",
-  ADMIN: ""
+  USER: 0,
+  ADMIN: 1
 }
 
 config.mailTransporter = nodemailer.createTransport({
@@ -21,12 +21,19 @@ config.mailTransporter = nodemailer.createTransport({
   auth: {
     user: 'ort.motl.app@gmail.com',
     pass: '43442476motlapp'
-    }
- });
-
-config.cookieSecret = "AN9tl1xPQ06mM2Yc"
+  }
+});
 
 config.secsInDay = 86400;
+
+config.cookieConfig = {
+  maxAge: 1000 * config.secsInDay,
+  httpOnly: true,
+  signed: true,
+  secure: true
+}
+
+config.cookieSecret = "AN9tl1xPQ06mM2Yc"
 
 config.emptyPasswordReset = 0;
 
@@ -36,13 +43,13 @@ config.passwordResetMailBody = 'Your code is: '
 
 config.hashRounds = 12;
 
-config.strRegex = /[a-zA-Z0-9_\-\. ]+/;
-config.strRegexFull = new RegExp("^" + config.strRegex + "$");
+config.strRegex = /[a-zA-Z0-9_\-\. ]*/;
+config.strRegexFull = new RegExp("^" + config.strRegex.source + "$");
 config.strNoSpacesRegex = /[a-zA-Z0-9_\-\.]+/;
 config.strNoSpacesRegexFull = /^[a-zA-Z0-9_\-\.]+$/;
-config.emailRegex = new RegExp(config.strNoSpacesRegex.source + "@" + config.strNoSpacesRegex.source + "(\." + config.strNoSpacesRegex.source + ")*");
-config.emailRegexFull = new RegExp("^" + config.emailRegex + "$");
+config.emailRegex = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+config.emailRegexFull = new RegExp("^" + config.emailRegex.source + "$");
 config.phoneRegex = /\+?[0-9]+/
-config.phoneRegexFull = new RegExp("^" + config.phoneRegex + "$");
+config.phoneRegexFull = new RegExp("^" + config.phoneRegex.source + "$");
 
 module.exports = config;

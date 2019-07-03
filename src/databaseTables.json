@@ -1,15 +1,15 @@
 {
   "users" : {
     "id" : "bigserial",
-    "user" : "text",
-    "shown_user" : "text",
+    "username" : "text",
+    "shown_username" : "text",
     "password" : "text",
     "session_ids" : "bigint[] -> sessions.id*",
     "email" : "text",
     "phone" : "text",
     "chats" : "bigint[] -> chats.id*",
     "permissions_id" : "int -> permissions.id",
-    "reset_password_id": "int -> password_reset.id"
+    "password_reset_id": "int -> password_reset.id"
   },
   "sessions" : {
     "id" : "bigserial",

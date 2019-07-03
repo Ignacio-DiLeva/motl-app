@@ -14,22 +14,27 @@ class PasswordResetRequestBroker{
     return new Promise((resolve, reject) => {
       this.db.returnUserData(user).then(
         (data) => {
-          let reset_id = data.password_reset_id;
+          let reset_id = parseInt(data.password_reset_id);
           let code = this.generateCode();
-          let unixTime = time.getUnixTime();
+          let unixTime = time.getUnixTime() + config.secsInDay;
           if(reset_id === config.emptyPasswordReset){
-            this.db.query("INSERT INTO password_reset (code, timestamp) VALUES ('" + code + "'," + unixTime + ")").then(
-              () => {
-                email.sendMail(data.email, config.passwordResetMailSubject, config.passwordResetMailBody + code,null);
-                resolve("SUCCESS");
+            this.db.query("INSERT INTO password_reset (code, timestamp) VALUES ('" + code + "'," + unixTime + ") RETURNING id").then(
+              (insert_result) => {
+                this.db.query("UPDATE users SET password_reset_id = " + insert_result.rows[0].id + "WHERE id = " + data.id).then(
+                  () => {
+                    email.sendMail(data.email, config.passwordResetMailSubject, config.passwordResetMailBody + code,null)
+                    resolve("SUCCESS");
+                  },
+                  (err) => {reject(err);}
+                );
               },
               (err) => {reject(err);}
             );
           }
           else{
-            this.db.query("UPDATE password_reset set (code, timestamp) VALUES ('" + code + "'," + unixTime + ") WHERE id = " + reset_id.toString()).then(
+            this.db.query("UPDATE password_reset SET code = " + code + ", timestamp = " + unixTime + " WHERE id = ").then(
               () => {
-                email.sendMail(data.email, config.passwordResetMailSubject, config.passwordResetMailBody + code,null)
+                email.sendMail(data.email, config.passwordResetMailSubject, config.passwordResetMailBody + code,null);
                 resolve("SUCCESS");
               },
               (err) => {reject(err);}
