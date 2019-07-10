@@ -16,7 +16,7 @@ class EMailBroker{
         };
         config.mailTransporter.sendMail(mailOptions, (err, info) => {
           if(err) reject(err);
-          resolve("SUCCESS");
+          else resolve("SUCCESS");
         });
     });
   }

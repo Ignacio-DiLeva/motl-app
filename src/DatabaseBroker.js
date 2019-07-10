@@ -12,7 +12,7 @@ class DatabaseBroker{
     return new Promise((resolve, reject) => {
       this.conn.query(queryStr, (err, result) => {
         if (err) reject(err);
-        resolve(result);
+        else resolve(result);
       });
     });
   }
@@ -21,14 +21,16 @@ class DatabaseBroker{
     return new Promise((resolve, reject) => {
       if(!this.checkUser(user))
         reject("BAD_USER");
-      this.query("SELECT * FROM users WHERE username = '" + user + "'").then(
-        (result) => {
-          if(result.rowCount == 1)
-            resolve(result.rows[0]);
-          reject("ERROR_USER_NOT_FOUND");
-        },
-        (err) => {reject(err);}
-      );
+      else {
+        this.query("SELECT * FROM users WHERE username = '" + user + "'").then(
+          (result) => {
+            if(result.rowCount == 1)
+              resolve(result.rows[0]);
+            else reject("ERROR_USER_NOT_FOUND");
+          },
+          (err) => {reject(err);}
+        );
+      }
     });
   }
 

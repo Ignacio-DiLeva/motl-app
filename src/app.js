@@ -31,10 +31,12 @@ function rootPage(req, res, next){
     let usersLocated = [];
     conn.query('SELECT * FROM users', (err, result) => {
       if (err) return reject(err);
-      result.rows.forEach(element => {
-        usersLocated.push(element.shown_username);
-      });
-      return resolve(usersLocated);
+      else{
+        result.rows.forEach(element => {
+          usersLocated.push(element.shown_username);
+        });
+        return resolve(usersLocated);
+      }
     });
   }).then(
     (users) => {
@@ -58,7 +60,7 @@ function rootPage(req, res, next){
       return new Promise((resolve, reject) => {
         s3.getObject({Bucket: 'motl-app', Key: 'testfile.txt'}, (err, data) => {
           if (err) return reject(err);
-          return resolve(data.Body.toString());
+          else return resolve(data.Body.toString());
         });
       });
     }
