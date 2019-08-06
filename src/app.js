@@ -161,4 +161,22 @@ function test(req, res, next){
 
 app.get('/test', test, (req,res) => {});
 
+let bm = require("./BasicMessenger");
+
+function sendMessage(req, res, next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  bm.sendMessage(req.body.message).then(
+    () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+function getMessage(req, res, next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  res.end(JSON.stringify({'_code' : "SUCCESS", "message" : bm.receive()}));
+}
+
+app.post("/send-message", sendMessage, (req,res) => {});
+app.get("/get-message", getMessage, (req,res) => {});
+
 app.listen(80);
