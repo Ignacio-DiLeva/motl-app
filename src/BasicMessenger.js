@@ -1,17 +1,17 @@
 'use strict'
 
 class BasicMessenger{
-    constructor(){
-        this.message = "";
-    }
+  constructor(){
+    this.message = "";
+  }
 
-    send(message){
-        this.message = message;
-    }
+  send(message){
+    this.message = message;
+  }
 
-    receive(){
-        return this.message;
-    }
+  receive(){
+    return this.message;
+  }
 }
 
 module.exports = new BasicMessenger();

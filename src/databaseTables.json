@@ -46,5 +46,18 @@
     "content_type": "text",
     "path": "text | NULL",
     "body": "text | NULL"
+  },
+  "posts" : {
+    "id" : "bigserial",
+    "section" : "text",
+    "name" : "text",
+    "user" : "bigint -> users.id",
+    "content" : "text",
+    "comments" : "bigint[] -> comments.id*"
+  },
+  "comments" : {
+    "id" : "bigserial",
+    "user" : "bigint -> users.id",
+    "comment" : "text"
   }
 }

@@ -79,7 +79,7 @@ class CookieBroker{
               });
               this.db.query("INSERT INTO sessions (timestamp, cookie) VALUES (" + (time.getUnixTime() + config.secsInDay).toString() + ",'" + insert_cookie + "') RETURNING id").then(
                 (insertResult) => {
-                  this.db.query("UPDATE users SET session_ids = array_append(session_ids," + insertResult.rows[0].id + "::bigint);").then(
+                  this.db.query("UPDATE users SET session_ids = array_append(session_ids," + insertResult.rows[0].id + "::bigint) WHERE id = " + data.id).then(
                     () => {resolve(insert_cookie);},
                     (err) => {reject(err);}
                   );
