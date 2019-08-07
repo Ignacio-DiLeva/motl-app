@@ -91,11 +91,6 @@
         "cookie" : "string"
       }
     }
-  ],
-  "/homepage" : [
-    {
-
-    }
   ]
 }
 

@@ -60,7 +60,7 @@
     "user" : "bigint -> users.id",
     "comment" : "text"
   },
-  "group" : {
+  "groups" : {
     "id" : "bigserial",
     "creator" : "bigint -> users.id",
     "administrators" : "bigint[] -> users.id*",
