@@ -59,5 +59,19 @@
     "id" : "bigserial",
     "user" : "bigint -> users.id",
     "comment" : "text"
+  },
+  "group" : {
+    "id" : "bigserial",
+    "creator" : "bigint -> users.id",
+    "administrators" : "bigint[] -> users.id*",
+    "users" : "bigint[] -> users.id*",
+    "assistance_logs" : "bigint[] -> assistance_logs.id*"
+  },
+  "assistance_logs" : {
+    "id" : "bigserial",
+    "time" : "bigint",
+    "location" : "text",
+    "activity" : "text",
+    "status" : "text/json (list of id, shown, presence_status / init in server, modified by client)"
   }
 }
