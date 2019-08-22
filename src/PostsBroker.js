@@ -11,7 +11,7 @@ class PostsBroker{
     return new Promise((resolve, reject) => {
       this.getPostBySectionAndName(section, name).then(
         (post) => {
-          if(!!post){
+          if(!!post && name != null){
             reject("POST_ALREADY_EXISTS");
             return;
           }
@@ -121,7 +121,8 @@ class PostsBroker{
                     "id" : row.id,
                     "section" : section,
                     "name" : row.name,
-                    "user" : user_res.shown_username
+                    "user" : user_res.shown_username,
+                    "content" : row.content
                   }
                 );
               },

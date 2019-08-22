@@ -2,9 +2,12 @@
 let config = require('./config');
 const AWS = require('aws-sdk');
 const bodyParser = require('body-parser');
+const multer = require("multer");
+var upload = multer({ dest: 'uploads/' });
 const cookieParser = require('cookie-parser');
 const {Pool, Client} = require('pg');
 var express = require('express');
+var fs = require("fs");
 
 const loginBroker = require("./LoginBroker");
 const registerBroker = require('./RegisterBroker');
@@ -178,5 +181,52 @@ function getMessage(req, res, next){
 
 app.post("/send-message", sendMessage, (req,res) => {});
 app.get("/get-message", getMessage, (req,res) => {});
+
+let pb = require("./PostsBroker");
+
+app.post('/submit-post', upload.single("file"), (req, res, next) => {
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  fs.readFile(req.file.path, 'utf8', (err, data) => {
+    if(err)
+      res.end(JSON.stringify({'_code' : err}));
+    else{
+      pb.submitPost(req.body.section,req.body.name,req.body.user,data).then(
+        () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+        (err) => {res.end(JSON.stringify({'_code' : err}));}
+      );
+    }
+  });
+});
+
+
+function submitComment(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  pb.submitComment(req.body.post_id,req.body.user,req.body.comment).then(
+    () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post('/submit-comment', submitComment, (req,res) => {});
+
+function getPost(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  pb.getPostById(req.body.id).then(
+    (post) => {res.end(JSON.stringify({'_code' : "SUCCESS", data:post}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post('/get-post', getPost, (req,res) => {});
+
+function postDiscovery(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  pb.postDiscovery(req.body.section,req.body.number).then(
+    (posts) => {res.end(JSON.stringify({'_code' : "SUCCESS", data:posts}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post('/post-discovery', postDiscovery, (req,res) => {});
 
 app.listen(80);
