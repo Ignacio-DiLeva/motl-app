@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 let config = require('./config');
 const AWS = require('aws-sdk');
 const bodyParser = require('body-parser');
@@ -186,11 +186,11 @@ let pb = require("./PostsBroker");
 
 app.post('/submit-post', upload.single("file"), (req, res, next) => {
   res.writeHeader(200, {'Content-Type': 'application/json'});
-  fs.readFile(req.file.path, 'utf8', (err, data) => {
+  fs.readFile(req.file.path, (err, data) => {
     if(err)
       res.end(JSON.stringify({'_code' : err}));
     else{
-      pb.submitPost(req.body.section,req.body.name,req.body.user,data).then(
+      pb.submitPost(req.body.section,req.body.name,req.body.user,data.toString('base64', 0, data.length)).then(
         () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
         (err) => {res.end(JSON.stringify({'_code' : err}));}
       );
@@ -222,7 +222,10 @@ app.post('/get-post', getPost, (req,res) => {});
 function postDiscovery(req,res,next){
   res.writeHeader(200, {'Content-Type': 'application/json'});
   pb.postDiscovery(req.body.section,req.body.number).then(
-    (posts) => {res.end(JSON.stringify({'_code' : "SUCCESS", data:posts}));},
+    (posts) => {
+      console.log(posts);
+      res.end(JSON.stringify({'_code' : "SUCCESS", data:posts}));
+    },
     (err) => {res.end(JSON.stringify({'_code' : err}));}
   );
 }

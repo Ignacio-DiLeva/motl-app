@@ -51,7 +51,7 @@
     "id" : "bigserial",
     "section" : "text",
     "name" : "text",
-    "user" : "bigint -> users.id",
+    "user_id" : "bigint -> users.id",
     "content" : "text",
     "comments" : "bigint[] -> comments.id*"
   },
@@ -72,6 +72,6 @@
     "time" : "bigint",
     "location" : "text",
     "activity" : "text",
-    "status" : "text/json (list of id, shown, presence_status / init in server, modified by client)"
+    "status" : "json (list of id, shown, presence_status / init in server, modified by client)"
   }
 }

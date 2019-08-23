@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 let nodemailer = require('nodemailer');
 
 var config = {};

@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 let db = require('./DatabaseBroker');
 let crypto = require("./CryptoBroker");
 let config = require('./config');

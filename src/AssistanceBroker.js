@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 let db = require("db");
 
 class AssistanceBroker{

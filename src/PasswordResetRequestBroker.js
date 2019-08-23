@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 let config = require('./config');
 let db = require('./DatabaseBroker');
 let email = require("./EMailBroker");

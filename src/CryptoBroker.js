@@ -1,6 +1,6 @@
-'use strict'
+"use strict";
 let config = require('./config');
-let bcrypt = require("bcrypt");
+let bcrypt = require("bcryptjs");
 
 class CryptoBroker{
   constructor(){

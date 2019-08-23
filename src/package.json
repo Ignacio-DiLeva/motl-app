@@ -22,19 +22,19 @@
   },
   "homepage": "https://github.com/Ignacio-DiLeva/motl-app#readme",
   "dependencies": {
-    "aws-sdk": "^2.451.0",
-    "bcrypt": "^3.0.6",
+    "aws-sdk": "^2.516.0",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
-    "express": "^4.16.4",
+    "express": "^4.17.1",
     "multer": "^1.4.2",
     "node-fetch": "^2.6.0",
-    "nodemailer": "^6.2.1",
-    "npm": "^6.9.2",
-    "pg": "^7.11.0",
+    "nodemailer": "^6.3.0",
+    "npm": "^6.11.2",
+    "pg": "^7.12.1",
     "randomstring": "^1.1.5"
   },
   "devDependencies": {
-    "eslint": "^6.0.1"
+    "eslint": "^6.2.1"
   }
 }
