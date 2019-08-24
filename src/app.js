@@ -95,16 +95,15 @@ function rootPage(req, res, next){
 app.get('/', rootPage, (req,res) => {});
 
 function login(req, res, next){
-  console.log(req.cookies["ORT_MOTL_APP"]);
   loginBroker.login(req.body.username, req.body.password, req.cookies["ORT_MOTL_APP"]).then(
-    (cookie) => {
-      res.cookie("ORT_MOTL_APP", cookie, config.cookieConfig);
+    (user_data) => {
+      res.cookie("ORT_MOTL_APP", user_data.cookie, config.cookieConfig);
       res.writeHeader(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify({'_code' : "SUCCESS"}));
+      res.end(JSON.stringify({'_code' : "SUCCESS", "id":user_data.id}));
     },
     (err) => {
       res.writeHeader(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify({'_code' : err.toString()}));
+      res.end(JSON.stringify({'_code' : "INTERNAL_ERROR"}));
     }
   );
 }
@@ -117,10 +116,10 @@ function register(req, res, next){
     res.end(JSON.stringify({'_code' : "ERROR_USER_ALREADY_LOGGED_IN"}));
   }
   registerBroker.register(req.body.username, req.body.shown_username, req.body.password, req.body.email, req.body.phone).then(
-    (cookie) => {
-      res.cookie("ORT_MOTL_APP", cookie, config.cookieConfig);
+    (user_data) => {
+      res.cookie("ORT_MOTL_APP", user_data.cookie, config.cookieConfig);
       res.writeHeader(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify({'_code' : "SUCCESS"}));
+      res.end(JSON.stringify({'_code' : "SUCCESS", "id":user_data.id}));
     },
     (err) => {
       res.writeHeader(200, {'Content-Type': 'application/json'});
@@ -223,7 +222,6 @@ function postDiscovery(req,res,next){
   res.writeHeader(200, {'Content-Type': 'application/json'});
   pb.postDiscovery(req.body.section,req.body.number).then(
     (posts) => {
-      console.log(posts);
       res.end(JSON.stringify({'_code' : "SUCCESS", data:posts}));
     },
     (err) => {res.end(JSON.stringify({'_code' : err}));}

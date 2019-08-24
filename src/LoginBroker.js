@@ -22,7 +22,7 @@ class LoginBroker{
               (passwordCheck) => {
                 if(passwordCheck){
                   cookieBroker.setCookie(user, cookie).then(
-                    (cookie) => {resolve(cookie);},
+                    (cookie) => {resolve({"cookie": cookie, "id":parseInt(data.id)});},
                     (err) => {reject(err);}
                   );
                 }

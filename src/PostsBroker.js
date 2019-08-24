@@ -17,11 +17,10 @@ class PostsBroker {
           }
           this.db.query("INSERT INTO posts (section, name, user_id, content, comments) VALUES ('" + section + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[])").then(
             () => {
-              resolve("SUCCESS");
+              return resolve("SUCCESS");
             },
             (err) => {
-              console.log(err);
-              reject("ERROR_INTERNAL");
+              return reject("ERROR_INTERNAL");
             }
           );
         }
@@ -35,12 +34,12 @@ class PostsBroker {
         (result) => {
           let comment_id = result.rows[0].id;
           this.db.query("UPDATE posts SET comments = array_append(comments," + comment_id + "::bigint) WHERE id = " + post_id).then(
-            () => { resolve("SUCCESS"); },
-            (err) => { reject(err); }
+            () => { return resolve("SUCCESS"); },
+            (err) => { return reject(err); }
           );
         },
         () => {
-          reject("ERROR_INTERNAL");
+          return reject("ERROR_INTERNAL");
         }
       );
     });
@@ -74,17 +73,17 @@ class PostsBroker {
                           }
                         );
                       },
-                      (err) => { reject(err); }
+                      (err) => { return reject(err); }
                     );
-                    resolve(res);
+                    return resolve(res);
                   });
                 },
-                (err) => { reject(err); }
+                (err) => { return reject(err); }
               );
             }
           );
         },
-        (err) => { reject(err); }
+        (err) => { return reject(err); }
       );
     });
   }
@@ -94,40 +93,37 @@ class PostsBroker {
       this.db.query("SELECT * FROM posts WHERE section='" + section + "' AND name='" + name + "'").then(
         (result) => {
           if (result.rowCount == 0) {
-            resolve(null);
+            return resolve(null);
           }
           else {
-            resolve(result.rows[0]);
+            return resolve(result.rows[0]);
           }
         },
-        (err) => { reject(err); }
+        (err) => { return reject(err); }
       );
     });
   }
 
-  getPostJson(section, number) {
+ getPostJson (section, number) {
     return new Promise((resolve, reject) => {
       this.db.query("SELECT * FROM posts WHERE section='" + section + "' ORDER BY id DESC LIMIT " + number).then(
-        (result) => {
+        async (result) => {
           let l = [];
           for(let i = 0; i < result.rowCount; i++){
             let row = result.rows[i];
-            db.query("SELECT * FROM users WHERE id = " + row.user_id).then(
-              (user_res) => {
-                l.push({
-                  "id": row.id,
-                  "section": section,
-                  "name": row.name,
-                  "user": user_res.rows[0].shown_username,
-                  "content": row.content
-                });
-              },
-              (err) => {reject(err);}
-            ).then(
-              () => { }
-            );
+            try {
+              const user_res = await db.query("SELECT * FROM users WHERE id = " + row.user_id);
+              l.push({
+                "id": row.id,
+                "section": section,
+                "name": row.name,
+                "user": user_res.rows[0].shown_username,
+                "content": row.content
+              });
+            } catch (err) {
+              return reject(err);
+            }
           }
-          console.log(l);
           resolve(l);
         },
       ).then(
