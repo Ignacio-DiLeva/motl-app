@@ -91,6 +91,48 @@
         "cookie" : "string"
       }
     }
+  ],
+  "submit-post" : [
+    {
+      "format" : "multipart/form-data",
+      "method" : "POST",
+      "expects" : {
+        "section" : "string",
+        "name" : "string/null",
+        "user" : "int/id",
+        "file" : "file"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ]
+      }
+    }
+  ],
+  "post-discovery" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "section" : "string",
+        "number" : "int"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ],
+        "data" : {
+          "section" : "string",
+          "time" : "int",
+          "posts[]" : {
+            "id" : "int",
+            "section" : "string",
+            "name" : "string",
+            "user" : "string",
+            "content" : "string/base64"
+          }
+        }
+      }
+    }
   ]
 }
 
