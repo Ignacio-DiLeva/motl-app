@@ -17,6 +17,19 @@ class DatabaseBroker{
     });
   }
 
+  returnUserDataFromId(user){
+    return new Promise((resolve, reject) => {
+      this.query("SELECT * FROM users WHERE id = " + user + "").then(
+        (result) => {
+          if(result.rowCount == 1)
+            resolve(result.rows[0]);
+          else reject("ERROR_USER_NOT_FOUND");
+        },
+        (err) => {return reject(err);}
+      );
+    });
+  }
+
   returnUserData(user){
     return new Promise((resolve, reject) => {
       if(!this.checkUser(user))

@@ -9,22 +9,42 @@ class PostsBroker {
 
   submitPost(section, name, user, content) {
     return new Promise((resolve, reject) => {
-      this.getPostBySectionAndName(section, name).then(
-        (post) => {
-          if (!!post && (name != null && name != "null")) {
-            reject("POST_ALREADY_EXISTS");
-            return;
+      if(section.charAt(0) == "@"){
+        this.db.returnUserDataFromId(user).then(
+          (data) => {
+            let username = data.username;
+            let username2 = section.substring(1);
+            let s1 = username + "@" + username2;
+            let s2 = username2 + "@" + username;
+            this.db.query("INSERT INTO posts (section, name, user_id, content, comments) VALUES ('" + s1 + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[])").then(
+              () => {
+                this.db.query("INSERT INTO posts (section, name, user_id, content, comments) VALUES ('" + s2 + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[])").then(
+                  () => {
+                    return resolve("SUCCESS");
+                  },
+                  (err) => {
+                    return reject("ERROR_INTERNAL");
+                  }
+                );
+              },
+              (err) => {
+                return reject("ERROR_INTERNAL");
+              }
+            );
+          },
+          (err) => {return reject("ERROR_INTERNAL");}
+        );
+      }
+      else{
+        this.db.query("INSERT INTO posts (section, name, user_id, content, comments) VALUES ('" + section + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[])").then(
+          () => {
+            return resolve("SUCCESS");
+          },
+          (err) => {
+            return reject("ERROR_INTERNAL");
           }
-          this.db.query("INSERT INTO posts (section, name, user_id, content, comments) VALUES ('" + section + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[])").then(
-            () => {
-              return resolve("SUCCESS");
-            },
-            (err) => {
-              return reject("ERROR_INTERNAL");
-            }
-          );
-        }
-      );
+        );
+      }
     });
   }
 
@@ -133,17 +153,35 @@ class PostsBroker {
     });
   }
 
-  postDiscovery(section, number) {
+  postDiscovery(section, number, user_id) {
     return new Promise((resolve, reject) => {
-      this.getPostJson(section, number).then(
-        (j) => {
-          return resolve({
-            "section": section,
-            "time": time.getUnixTime(),
-            "posts": j
-          });
-        }
-      );
+      if(user_id != undefined && user_id != null && section.charAt(0) == "@"){
+        this.db.returnUserDataFromId(user_id).then(
+          (data) => {
+            section = section.substring(1) + "@" + data.username;
+            this.getPostJson(section, number).then(
+              (j) => {
+                return resolve({
+                  "section": section,
+                  "time": time.getUnixTime(),
+                  "posts": j
+                });
+              }
+            );
+          }
+        );
+      }
+      else{
+        this.getPostJson(section, number).then(
+          (j) => {
+            return resolve({
+              "section": section,
+              "time": time.getUnixTime(),
+              "posts": j
+            });
+          }
+        );
+      }
     });
   }
 }

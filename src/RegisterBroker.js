@@ -35,10 +35,12 @@ class RegisterBroker{
                     let registerQuery = "INSERT INTO users (username, shown_username, password, session_ids, email, phone, chats, permissions_id, password_reset_id) VALUES ('" + user + "','" + shownUser +"','" + hash + "',array[]::bigint[],'" + email + "','" + phone + "',array[]::bigint[]," + config.permissions.USER + ",0) RETURNING id";
                     this.db.query(registerQuery).then(
                     (user_data) => {
-                      cookieBroker.setCookie(user, null).then(
+                      /*cookieBroker.setCookie(user, null).then(
                         (cookie) => {resolve({"cookie": cookie, "id":parseInt(user_data.rows[0].id)});},
                         (err) => {reject(err);}
                       );
+                      */
+                      resolve({"id":parseInt(user_data.rows[0].id)});
                     },
                     (err) => {reject(err);}
                   );

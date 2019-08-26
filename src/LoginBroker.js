@@ -21,10 +21,12 @@ class LoginBroker{
             crypto.checkHashMatch(data.password, password).then(
               (passwordCheck) => {
                 if(passwordCheck){
-                  cookieBroker.setCookie(user, cookie).then(
+                  /*cookieBroker.setCookie(user, cookie).then(
                     (cookie) => {resolve({"cookie": cookie, "id":parseInt(data.id)});},
                     (err) => {reject(err);}
                   );
+                  */
+                 resolve({"id":parseInt(data.id)});
                 }
                 else{
                   reject("ERROR_PASSWORD_INCORRECT");

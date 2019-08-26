@@ -30,10 +30,13 @@ class PasswordResetSubmitBroker{
                     () => {
                       this.updatePassword(user, new_password).then(
                         () => {
+                          /*
                           cookieBroker.setCookie(user, null).then(
                             (cookie) => {resolve(cookie);},
                             (err) => {reject(err);}
                           );
+                          */
+                         resolve(null);
                         },
                         (err) => {reject(err);}
                       );
