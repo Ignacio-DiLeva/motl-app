@@ -50,7 +50,7 @@ class PostsBroker {
 
   submitComment(post_id, user, comment) {
     return new Promise((resolve, reject) => {
-      this.db.query("INSERT INTO comments (user, comment) VALUES (" + user + ",'" + comment + "') RETURNING id").then(
+      this.db.query("INSERT INTO comments (user_id, comment) VALUES (" + user + ",'" + comment + "') RETURNING id").then(
         (result) => {
           let comment_id = result.rows[0].id;
           this.db.query("UPDATE posts SET comments = array_append(comments," + comment_id + "::bigint) WHERE id = " + post_id).then(
@@ -67,7 +67,7 @@ class PostsBroker {
 
   getPostById(post_id) {
     return new Promise((resolve, reject) => {
-      this.db.query("SELECT * FROM posts WHERE id=" + post_id).then(
+      this.db.query("SELECT * FROM posts WHERE id = " + post_id).then(
         (result) => {
           let row = result.rows[0];
           db.query("SELECT * FROM users WHERE id = " + row.user_id).then(
@@ -75,28 +75,25 @@ class PostsBroker {
               let res = {
                 "id": row.id,
                 "section": row.section,
-                "name": row.row.name,
+                "name": row.name,
                 "user": user_res.shown_username,
                 "content": row.content,
                 "comments": []
               };
               this.db.query("SELECT * FROM comments WHERE id = ANY ('{" + row.comments.join(",") + "}'::bigint[])").then(
-                (comments) => {
-                  comments.rows.forEach((c_row) => {
-                    db.returnUserData(c_row.user).then(
-                      (c_user_res) => {
-                        res.comments.push(
-                          {
-                            "id": c_row.id,
-                            "user": c_user_res.shown_username,
-                            "comment": c_row.comment
-                          }
-                        );
-                      },
-                      (err) => { return reject(err); }
+                async (comments) => {
+                  for(let i = 0; i < comments.rowCount; i++){
+                    let c_row = comments.rows[i];
+                    let c_user_res = await db.returnUserDataFromId(c_row.user_id);
+                    res.comments.push(
+                      {
+                        "id": c_row.id,
+                        "user": c_user_res.shown_username,
+                        "comment": c_row.comment
+                      }
                     );
-                    return resolve(res);
-                  });
+                  }
+                  return resolve(res);
                 },
                 (err) => { return reject(err); }
               );
@@ -124,16 +121,24 @@ class PostsBroker {
     });
   }
 
- getPostJson (section, number) {
+ getPostJson (section, number, no_content) {
     return new Promise((resolve, reject) => {
-      this.db.query("SELECT * FROM posts WHERE section='" + section + "' ORDER BY id DESC LIMIT " + number).then(
+      let q = "SELECT * FROM posts WHERE section='" + section + "' ORDER BY id DESC LIMIT " + number;
+      this.db.query(q).then(
         async (result) => {
           let l = [];
           for(let i = 0; i < result.rowCount; i++){
             let row = result.rows[i];
             try {
               const user_res = await db.query("SELECT * FROM users WHERE id = " + row.user_id);
-              l.push({
+              if(no_content)
+                l.push({
+                "id": row.id,
+                "section": section,
+                "name": row.name,
+                "user": user_res.rows[0].shown_username,
+              });
+              else l.push({
                 "id": row.id,
                 "section": section,
                 "name": row.name,
@@ -153,13 +158,21 @@ class PostsBroker {
     });
   }
 
-  postDiscovery(section, number, user_id) {
+  postDiscovery(section, number, user_id, no_content) {
     return new Promise((resolve, reject) => {
+
+      if(no_content === undefined) no_content = false;
+      else if(no_content == "true") no_content = true;
+      else if(no_content == "false") no_content = false;
+      else if(no_content == null) no_content = false;
+      else if(no_content == "") no_content = true;
+      else no_content = !!no_content;
+
       if(user_id != undefined && user_id != null && section.charAt(0) == "@"){
         this.db.returnUserDataFromId(user_id).then(
           (data) => {
             section = section.substring(1) + "@" + data.username;
-            this.getPostJson(section, number).then(
+            this.getPostJson(section, number, no_content).then(
               (j) => {
                 return resolve({
                   "section": section,
@@ -172,7 +185,7 @@ class PostsBroker {
         );
       }
       else{
-        this.getPostJson(section, number).then(
+        this.getPostJson(section, number, no_content).then(
           (j) => {
             return resolve({
               "section": section,

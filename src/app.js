@@ -222,7 +222,7 @@ app.post('/get-post', getPost, (req,res) => {});
 
 function postDiscovery(req,res,next){
   res.writeHeader(200, {'Content-Type': 'application/json'});
-  pb.postDiscovery(req.body.section,req.body.number,req.body.user).then(
+  pb.postDiscovery(req.body.section,req.body.number,req.body.user, req.body.no_content).then(
     (posts) => {
       res.end(JSON.stringify({'_code' : "SUCCESS", data:posts}));
     },

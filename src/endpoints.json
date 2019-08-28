@@ -114,7 +114,9 @@
       "method" : "POST",
       "expects" : {
         "section" : "string",
-        "number" : "int"
+        "number" : "int",
+        "id" : "int",
+        "no_content?" : "str/boolean/present"
       },
       "returns" : {
         "_code" : [
@@ -130,6 +132,48 @@
             "user" : "string",
             "content" : "string/base64"
           }
+        }
+      }
+    }
+  ],
+  "submit-comment" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "post_id" : "int",
+        "user" : "int",
+        "comment" : "string"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ]
+      }
+    }
+  ],
+  "get-post" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "id" : "int"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ],
+        "posts[]" : {
+          "id" : "int",
+          "section" : "string",
+          "name" : "string",
+          "user" : "string",
+          "content" : "string/base64",
+          "comments" : [
+            {
+              "id" : "int",
+              "user" : "string",
+              "comment" : "string"
+            }
+          ]
         }
       }
     }
