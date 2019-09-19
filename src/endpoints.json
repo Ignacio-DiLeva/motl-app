@@ -99,6 +99,7 @@
       "expects" : {
         "section" : "string",
         "name" : "string/null",
+        "description" : "string",
         "user" : "int/id",
         "file" : "file"
       },
@@ -130,7 +131,8 @@
             "section" : "string",
             "name" : "string",
             "user" : "string",
-            "content" : "string/base64"
+            "content" : "string/base64",
+            "description" : "string"
           }
         }
       }
@@ -167,6 +169,7 @@
           "name" : "string",
           "user" : "string",
           "content" : "string/base64",
+          "description" : "string",
           "comments" : [
             {
               "id" : "int",

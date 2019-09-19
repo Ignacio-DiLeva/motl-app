@@ -191,7 +191,7 @@ app.post('/submit-post', upload.single("file"), (req, res, next) => {
     if(err)
       res.end(JSON.stringify({'_code' : err}));
     else{
-      pb.submitPost(req.body.section,req.body.name,req.body.user,data.toString('base64', 0, data.length)).then(
+      pb.submitPost(req.body.section,req.body.name,req.body.user,data.toString('base64', 0, data.length), req.body.description).then(
         () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
         (err) => {res.end(JSON.stringify({'_code' : err}));}
       );

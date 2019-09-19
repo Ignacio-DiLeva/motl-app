@@ -7,7 +7,7 @@ class PostsBroker {
     this.db = db;
   }
 
-  submitPost(section, name, user, content) {
+  submitPost(section, name, user, content, description) {
     return new Promise((resolve, reject) => {
       if(section.charAt(0) == "@"){
         this.db.returnUserDataFromId(user).then(
@@ -16,9 +16,9 @@ class PostsBroker {
             let username2 = section.substring(1);
             let s1 = username + "@" + username2;
             let s2 = username2 + "@" + username;
-            this.db.query("INSERT INTO posts (section, name, user_id, content, comments) VALUES ('" + s1 + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[])").then(
+            this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + s1 + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[],'" + description + "')").then(
               () => {
-                this.db.query("INSERT INTO posts (section, name, user_id, content, comments) VALUES ('" + s2 + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[])").then(
+                this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + s2 + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[],'" + description + "')").then(
                   () => {
                     return resolve("SUCCESS");
                   },
@@ -36,7 +36,7 @@ class PostsBroker {
         );
       }
       else{
-        this.db.query("INSERT INTO posts (section, name, user_id, content, comments) VALUES ('" + section + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[])").then(
+        this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + section + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[],'" + description + "')").then(
           () => {
             return resolve("SUCCESS");
           },
@@ -78,6 +78,7 @@ class PostsBroker {
                 "name": row.name,
                 "user": user_res.shown_username,
                 "content": row.content,
+                "description": row.description,
                 "comments": []
               };
               this.db.query("SELECT * FROM comments WHERE id = ANY ('{" + row.comments.join(",") + "}'::bigint[])").then(
@@ -143,7 +144,8 @@ class PostsBroker {
                 "section": section,
                 "name": row.name,
                 "user": user_res.rows[0].shown_username,
-                "content": row.content
+                "content": row.content,
+                "description": row.description
               });
             } catch (err) {
               return reject(err);
