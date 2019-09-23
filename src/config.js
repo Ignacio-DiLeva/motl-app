@@ -33,6 +33,8 @@ config.cookieConfig = {
   secure: true
 }
 
+config.bucketName = 'motl-app'
+
 config.cookieSecret = "AN9tl1xPQ06mM2Yc"
 
 config.emptyPasswordReset = 0;

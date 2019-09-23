@@ -1,14 +1,17 @@
 "use strict";
 let db = require("./DatabaseBroker");
-let time = require("./TimeBroker")
+let time = require("./TimeBroker");
+let s3Broker = require('./S3Broker');
 
 class PostsBroker {
-  constructor(db) {
+  constructor(db, s3) {
     this.db = db;
+    this.s3Broker = s3;
   }
 
   submitPost(section, name, user, content, description) {
     return new Promise((resolve, reject) => {
+      //content = '' in S3 update
       if(section.charAt(0) == "@"){
         this.db.returnUserDataFromId(user).then(
           (data) => {
@@ -16,16 +19,25 @@ class PostsBroker {
             let username2 = section.substring(1);
             let s1 = username + "@" + username2;
             let s2 = username2 + "@" + username;
-            this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + s1 + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[],'" + description + "')").then(
-              () => {
-                this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + s2 + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[],'" + description + "')").then(
+            this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + s1 + "','" + name + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
+              (id) => {
+                this.s3Broker.putObject(id.rows[0].id.toString(), content).then(
                   () => {
-                    return resolve("SUCCESS");
-                  },
-                  (err) => {
-                    return reject("ERROR_INTERNAL");
+                    this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + s2 + "','" + name + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
+                      (id2) => {
+                        this.s3Broker.putObject(id2.rows[0].id.toString(), content).then(
+                          () => {
+                            return resolve("SUCCESS");
+                          }
+                        );
+                      },
+                      (err) => {
+                        return reject("ERROR_INTERNAL");
+                      }
+                    );
                   }
                 );
+                
               },
               (err) => {
                 return reject("ERROR_INTERNAL");
@@ -36,9 +48,13 @@ class PostsBroker {
         );
       }
       else{
-        this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + section + "','" + name + "'," + user + ",'" + content.replace(/[\\$'"]/g, "\\$&") + "',array[]::bigint[],'" + description + "')").then(
-          () => {
-            return resolve("SUCCESS");
+        this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + section + "','" + name + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
+          (id) => {
+            this.s3Broker.putObject(id.rows[0].id.toString(), content).then(
+              () => {
+                return resolve("SUCCESS");
+              }
+            );
           },
           (err) => {
             return reject("ERROR_INTERNAL");
@@ -201,4 +217,4 @@ class PostsBroker {
   }
 }
 
-module.exports = new PostsBroker(db);
+module.exports = new PostsBroker(db, s3Broker);
