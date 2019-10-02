@@ -37,7 +37,6 @@ class PostsBroker {
                     );
                   }
                 );
-                
               },
               (err) => {
                 return reject("ERROR_INTERNAL");
@@ -92,7 +91,7 @@ class PostsBroker {
                 "id": row.id,
                 "section": row.section,
                 "name": row.name,
-                "user": user_res.shown_username,
+                "user": user_res.rows[0].shown_username,
                 "content": row.content,
                 "description": row.description,
                 "comments": []
