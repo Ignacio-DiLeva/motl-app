@@ -33,7 +33,7 @@ config.cookieConfig = {
   secure: true
 }
 
-config.bucketName = 'motl-app'
+config.bucketName = 'files.ortenmarcha.ml'
 
 config.cookieSecret = "AN9tl1xPQ06mM2Yc"
 

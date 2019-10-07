@@ -61,7 +61,7 @@ function rootPage(req, res, next){
   ).then(
     (result) => {
       return new Promise((resolve, reject) => {
-        s3.getObject({Bucket: 'motl-app', Key: 'testfile.txt'}, (err, data) => {
+        s3.getObject({Bucket: config.bucketName, Key: 'testfile.txt'}, (err, data) => {
           if (err) return reject(err);
           else return resolve(data.Body.toString());
         });
