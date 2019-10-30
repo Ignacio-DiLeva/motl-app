@@ -13,6 +13,7 @@ const loginBroker = require("./LoginBroker");
 const registerBroker = require('./RegisterBroker');
 const passwordResetRequestBroker = require("./PasswordResetRequestBroker");
 const passwordResetSubmitBroker = require("./PasswordResetSubmitBroker");
+const assistanceBroker = require("./AssistanceBroker");
 
 AWS.config.update({region: 'us-east-1'});
 var app = express();
@@ -232,5 +233,60 @@ function postDiscovery(req,res,next){
 }
 
 app.post('/post-discovery', postDiscovery, (req,res) => {});
+
+function assistanceDiscovery(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  assistanceBroker.listLogs(req.body.user).then(
+    (res) => {res.end(JSON.stringify({'_code' : "SUCCESS", logs:res}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post('/assistance-discovery', assistanceDiscovery, (req,res) => {});
+
+function getAssistanceLog(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  assistanceBroker.getLog(req.body.id).then(
+    (res) => {res.end(JSON.stringify({'_code' : "SUCCESS", data:res}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post('/get-assistance-log', getAssistanceLog, (req,res) => {});
+
+function createAssistanceLog(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  assistanceBroker.createLog(
+    {
+      user:req.body.user,
+      time:req.body.time,
+      location:req.body.location,
+      activity:req.body.activity,
+      status:req.body.status}
+    ).then(
+    (res) => {res.end(JSON.stringify({'_code' : "SUCCESS", id:res}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post('/create-assistance-log', createAssistanceLog, (req,res) => {});
+
+function updateAssistanceLog(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  assistanceBroker.setLog(
+    req.body.id,
+    {
+      user:req.body.user,
+      time:req.body.time,
+      location:req.body.location,
+      activity:req.body.activity,
+      status:req.body.status}
+    ).then(
+    () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post('/update-assistance-log', updateAssistanceLog, (req,res) => {});
 
 app.listen(80);

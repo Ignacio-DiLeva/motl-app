@@ -5,7 +5,7 @@ var config = {};
 
 config.connData = {
   user: 'postgres',
-  host: 'ort-motl-app.cwihmzkvtujm.us-east-1.rds.amazonaws.com',
+  host: 'db.ortenmarcha.ml',
   database: 'ort_motl_app',
   password: '43442476postgres',
   port: 5432,
