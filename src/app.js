@@ -246,7 +246,7 @@ app.post('/assistance-discovery', assistanceDiscovery, (req,res) => {});
 
 function getAssistanceLog(req,res,next){
   res.writeHeader(200, {'Content-Type': 'application/json'});
-  assistanceBroker.getLog(req.body.id).then(
+  assistanceBroker.getLog(req.body.user).then(
     (res) => {res.end(JSON.stringify({'_code' : "SUCCESS", data:res}));},
     (err) => {res.end(JSON.stringify({'_code' : err}));}
   );
