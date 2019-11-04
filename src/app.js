@@ -289,4 +289,12 @@ function updateAssistanceLog(req,res,next){
 
 app.post('/update-assistance-log', updateAssistanceLog, (req,res) => {});
 
+function hilsenGet1(req, res, next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  res.end(JSON.stringify({"users":[{"name":"Michelle Castro","userName":"micastro","picture":"http://blogspay.com/wp-content/uploads/2018/07/istock-526142422.jpg","id":1},{"name":"Carol Faria","userName":"carolf","picture":"https://www.doctorulzilei.ro/wp-content/uploads/2014/02/stretching-3.jpg","id":2},{"name":"Monica Nishi","userName":"nishim","picture":"https://www.sss.gov/portals/0/Images/Women-and-the-Draft.jpg","id":3}]}
+  ));
+}
+
+app.post('/get-sample1', hilsenGet1, (req,res) => {});
+
 app.listen(80);

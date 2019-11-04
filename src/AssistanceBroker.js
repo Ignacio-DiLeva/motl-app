@@ -1,5 +1,5 @@
 "use strict";
-let db = require("db");
+let db = require("./DatabaseBroker");
 
 class AssistanceBroker{
   constructor(db){
@@ -12,7 +12,7 @@ class AssistanceBroker{
         (res) => {
           let result = [];
           res.rows.forEach((row) => {
-            result.push({id = row.id, user = row.user, time = row.time, location = row.location,activity = row.activity})
+            result.push({id: row.id, user: row.user, time: row.time, location: row.location,activity: row.activity})
           });
           resolve(result);
         },
@@ -26,7 +26,7 @@ class AssistanceBroker{
       this.db.query("SELECT * FROM assistance_logs WHERE id =" + log_id).then(
         (res) => {
           let row = res.rows[0];
-          resolve({id = row.id, user = row.user, time = row.time, location = row.location,activity = row.activity, status = row.status});
+          resolve({id: row.id, user: row.user, time: row.time, location: row.location,activity: row.activity, status: row.status});
         },
         (err) => {reject(err);}
       );
