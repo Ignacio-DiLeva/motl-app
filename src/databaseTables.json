@@ -69,7 +69,7 @@
   },
   "assistance_logs" : {
     "id" : "bigserial",
-    "user" : "bigint -> users.id",
+    "user_id" : "bigint -> users.id",
     "time" : "bigint",
     "location" : "text",
     "activity" : "text",

@@ -244,6 +244,7 @@
     {
       "method" : "POST",
       "expects" : {
+        "id" : "int",
         "user" : "int",
         "time" : "int",
         "location" : "string",

@@ -237,7 +237,7 @@ app.post('/post-discovery', postDiscovery, (req,res) => {});
 function assistanceDiscovery(req,res,next){
   res.writeHeader(200, {'Content-Type': 'application/json'});
   assistanceBroker.listLogs(req.body.user).then(
-    (res) => {res.end(JSON.stringify({'_code' : "SUCCESS", logs:res}));},
+    (result) => {res.end(JSON.stringify({'_code' : "SUCCESS", logs:result}));},
     (err) => {res.end(JSON.stringify({'_code' : err}));}
   );
 }
@@ -246,8 +246,8 @@ app.post('/assistance-discovery', assistanceDiscovery, (req,res) => {});
 
 function getAssistanceLog(req,res,next){
   res.writeHeader(200, {'Content-Type': 'application/json'});
-  assistanceBroker.getLog(req.body.user).then(
-    (res) => {res.end(JSON.stringify({'_code' : "SUCCESS", data:res}));},
+  assistanceBroker.getLog(req.body.id).then(
+    (result) => {res.end(JSON.stringify({'_code' : "SUCCESS", data:result}));},
     (err) => {res.end(JSON.stringify({'_code' : err}));}
   );
 }
@@ -259,12 +259,11 @@ function createAssistanceLog(req,res,next){
   assistanceBroker.createLog(
     {
       user:req.body.user,
-      time:req.body.time,
       location:req.body.location,
       activity:req.body.activity,
       status:req.body.status}
     ).then(
-    (res) => {res.end(JSON.stringify({'_code' : "SUCCESS", id:res}));},
+    (result) => {res.end(JSON.stringify({'_code' : "SUCCESS", id:result}));},
     (err) => {res.end(JSON.stringify({'_code' : err}));}
   );
 }
@@ -277,7 +276,6 @@ function updateAssistanceLog(req,res,next){
     req.body.id,
     {
       user:req.body.user,
-      time:req.body.time,
       location:req.body.location,
       activity:req.body.activity,
       status:req.body.status}

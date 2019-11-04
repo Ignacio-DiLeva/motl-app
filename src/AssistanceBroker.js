@@ -1,5 +1,6 @@
 "use strict";
 let db = require("./DatabaseBroker");
+let time = require("./TimeBroker")
 
 class AssistanceBroker{
   constructor(db){
@@ -8,7 +9,7 @@ class AssistanceBroker{
 
   listLogs(user){
     return new Promise((resolve, reject) => {
-      this.db.query("SELECT * FROM assistance_logs WHERE user =" + user).then(
+      this.db.query("SELECT * FROM assistance_logs WHERE user_id = " + user).then(
         (res) => {
           let result = [];
           res.rows.forEach((row) => {
@@ -23,7 +24,7 @@ class AssistanceBroker{
 
   getLog(log_id){
     return new Promise((resolve, reject) => {
-      this.db.query("SELECT * FROM assistance_logs WHERE id =" + log_id).then(
+      this.db.query("SELECT * FROM assistance_logs WHERE id = " + log_id).then(
         (res) => {
           let row = res.rows[0];
           resolve({id: row.id, user: row.user, time: row.time, location: row.location,activity: row.activity, status: row.status});
@@ -35,7 +36,7 @@ class AssistanceBroker{
 
   setLog(log_id, values){
     return new Promise((resolve, reject) => {
-      this.db.query("UPDATE assistance_logs SET user =" + values.user + ",time =" + values.time + ",location = '" + values.location + "',activity = '" + values.activity + "', status = '" + values.status.replace("'","\\'").replace('"', '\\"')+ "' WHERE id =" + log_id).then(
+      this.db.query("UPDATE assistance_logs SET user_id = " + values.user + ",time = " + time.getUnixTime().toString() + ",location = '" + values.location + "',activity = '" + values.activity + "', status = '" + values.status + "' WHERE id =" + log_id).then(
         () => {resolve("SUCCESS")},
         (err) => {reject(err);}
       );
@@ -44,7 +45,7 @@ class AssistanceBroker{
 
   createLog(values){
     return new Promise((resolve, reject) => {
-      this.db.query("INSERT INTO assistance_logs (user, time, location, activity, status) VALUES (" + values.user + "," + values.time + ",'" + values.location + "','" + values.activity + "','" + values.status.replace("'","\\'").replace('"', '\\"')+ "') RETURNING id").then(
+      this.db.query("INSERT INTO assistance_logs (user_id, time, location, activity, status) VALUES (" + values.user + "," + time.getUnixTime().toString() + ",'" + values.location + "','" + values.activity + "','" + values.status + "') RETURNING id").then(
         (res) => {resolve(res.rows[0].id)},
         (err) => {reject(err);}
       );
