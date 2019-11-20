@@ -14,6 +14,8 @@ const registerBroker = require('./RegisterBroker');
 const passwordResetRequestBroker = require("./PasswordResetRequestBroker");
 const passwordResetSubmitBroker = require("./PasswordResetSubmitBroker");
 const assistanceBroker = require("./AssistanceBroker");
+const postBroker = require("./PostsBroker");
+const chatBroker = require("./ChatBroker");
 
 AWS.config.update({region: 'us-east-1'});
 var app = express();
@@ -157,34 +159,7 @@ function passwordResetSubmit(req, res, next){
   );
 }
 
-app.post('/password-reset-submit', passwordResetSubmit, (req,res) => {});
-
-function test(req, res, next){
-  res.writeHeader(200, {'Content-Type': 'application/json'});
-  res.end(JSON.stringify({'cookie' : '0123456789abcdef'}));
-}
-
-app.get('/test', test, (req,res) => {});
-
-let bm = require("./BasicMessenger");
-
-function sendMessage(req, res, next){
-  res.writeHeader(200, {'Content-Type': 'application/json'});
-  bm.sendMessage(req.body.message).then(
-    () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
-    (err) => {res.end(JSON.stringify({'_code' : err}));}
-  );
-}
-
-function getMessage(req, res, next){
-  res.writeHeader(200, {'Content-Type': 'application/json'});
-  res.end(JSON.stringify({'_code' : "SUCCESS", "message" : bm.receive()}));
-}
-
-app.post("/send-message", sendMessage, (req,res) => {});
-app.get("/get-message", getMessage, (req,res) => {});
-
-let pb = require("./PostsBroker");
+app.post('/password-reset-submit', passwordResetSubmit, (req,res) => {});z
 
 app.post('/submit-post', upload.single("file"), (req, res, next) => {
   res.writeHeader(200, {'Content-Type': 'application/json'});
@@ -193,7 +168,7 @@ app.post('/submit-post', upload.single("file"), (req, res, next) => {
       res.end(JSON.stringify({'_code' : err}));
     else{
       //No longer to base64 in S3
-      pb.submitPost(req.body.section,req.body.name,req.body.user,data, req.body.description).then(
+      postBroker.submitPost(req.body.section,req.body.name,req.body.user,data, req.body.description).then(
         () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
         (err) => {res.end(JSON.stringify({'_code' : err}));}
       );
@@ -204,7 +179,7 @@ app.post('/submit-post', upload.single("file"), (req, res, next) => {
 
 function submitComment(req,res,next){
   res.writeHeader(200, {'Content-Type': 'application/json'});
-  pb.submitComment(req.body.post_id,req.body.user,req.body.comment).then(
+  postBroker.submitComment(req.body.post_id,req.body.user,req.body.comment).then(
     () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
     (err) => {res.end(JSON.stringify({'_code' : err}));}
   );
@@ -214,7 +189,7 @@ app.post('/submit-comment', submitComment, (req,res) => {});
 
 function getPost(req,res,next){
   res.writeHeader(200, {'Content-Type': 'application/json'});
-  pb.getPostById(req.body.id).then(
+  postBroker.getPostById(req.body.id).then(
     (post) => {res.end(JSON.stringify({'_code' : "SUCCESS", data:post}));},
     (err) => {res.end(JSON.stringify({'_code' : err}));}
   );
@@ -224,7 +199,7 @@ app.post('/get-post', getPost, (req,res) => {});
 
 function postDiscovery(req,res,next){
   res.writeHeader(200, {'Content-Type': 'application/json'});
-  pb.postDiscovery(req.body.section,req.body.number,req.body.user, req.body.no_content).then(
+  postBroker.postDiscovery(req.body.section,req.body.number,req.body.user, req.body.no_content).then(
     (posts) => {
       res.end(JSON.stringify({'_code' : "SUCCESS", data:posts}));
     },
@@ -294,5 +269,56 @@ function hilsenGet1(req, res, next){
 }
 
 app.post('/get-sample1', hilsenGet1, (req,res) => {});
+
+function chatDiscovery(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  chatBroker.chatDiscovery(req.body.user).then(
+    (result) => {res.end(JSON.stringify({'_code' : "SUCCESS", "chats" : result}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/chat-discovery", chatDiscovery, (req,res) => {});
+
+
+function getMessages(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  chatBroker.getMessages(req.body.chat_id).then(
+    (result) => {res.end(JSON.stringify({'_code' : "SUCCESS", "messages" : result}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/get-messages", getMessages, (req,res) => {});
+
+function addUser(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  chatBroker.addUser(req.body.chat_id, req.body.user).then(
+    () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/add-user", addUser, (req,res) => {});
+
+function removeUser(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  chatBroker.removeUser(req.body.chat_id, req.body.user).then(
+    () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/remove-user", removeUser, (req,res) => {});
+
+function createChat(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  chatBroker.createChat(req.body.chat_name, req.body.users).then(
+    (result) => {res.end(JSON.stringify({'_code' : "SUCCESS", "id" : result}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/create-chat", createChat, (req,res) => {});
 
 app.listen(80);
