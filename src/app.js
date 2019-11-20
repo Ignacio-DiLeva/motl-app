@@ -167,7 +167,6 @@ app.post('/submit-post', upload.single("file"), (req, res, next) => {
     if(err)
       res.end(JSON.stringify({'_code' : err}));
     else{
-      //No longer to base64 in S3
       postBroker.submitPost(req.body.section,req.body.name,req.body.user,data, req.body.description).then(
         () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
         (err) => {res.end(JSON.stringify({'_code' : err}));}
@@ -320,5 +319,37 @@ function createChat(req,res,next){
 }
 
 app.post("/create-chat", createChat, (req,res) => {});
+
+function changeChatName(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  chatBroker.changeName(req.body.chat_id, req.body.chat_name).then(
+    () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/change-chat-name", changeChatName, (req,res) => {});
+
+app.post('/submit-message', upload.single("file"), (req, res, next) => {
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  if(req.body.content_type != "text"){
+    fs.readFile(req.file.path, (err, data) => {
+      if(err)
+        res.end(JSON.stringify({'_code' : err}));
+      else{
+        chatBroker.submitMessage(req.body.chat_id,req.body.author,req.body.content_type,data,req.body.flags).then(
+          () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+          (err) => {res.end(JSON.stringify({'_code' : err}));}
+        );
+      }
+    });
+  }
+  else{
+    chatBroker.submitMessage(req.body.chat_id,req.body.author,req.body.content_type,req.body.content,req.body.flags).then(
+      () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+      (err) => {res.end(JSON.stringify({'_code' : err}));}
+    );
+  }
+});
 
 app.listen(80);
