@@ -13,7 +13,7 @@ class AssistanceBroker{
         (res) => {
           let result = [];
           res.rows.forEach((row) => {
-            result.push({id: row.id, user: row.user, time: row.time, location: row.location,activity: row.activity})
+            result.push({id: parseInt(row.id), user: parseInt(row.user), time: parseInt(row.time), location: row.location,activity: row.activity})
           });
           resolve(result);
         },
@@ -27,7 +27,7 @@ class AssistanceBroker{
       this.db.query("SELECT * FROM assistance_logs WHERE id = " + log_id).then(
         (res) => {
           let row = res.rows[0];
-          resolve({id: row.id, user: row.user, time: row.time, location: row.location,activity: row.activity, status: row.status});
+          resolve({id: parseInt(row.id), user: parseInt(row.user), time: parseInt(row.time), location: row.location,activity: row.activity, status: row.status});
         },
         (err) => {reject(err);}
       );
@@ -37,7 +37,7 @@ class AssistanceBroker{
   setLog(log_id, values){
     return new Promise((resolve, reject) => {
       this.db.query("UPDATE assistance_logs SET user_id = " + values.user + ",time = " + time.getUnixTime().toString() + ",location = '" + values.location + "',activity = '" + values.activity + "', status = '" + values.status + "' WHERE id =" + log_id).then(
-        () => {resolve("SUCCESS")},
+        () => {resolve("SUCCESS");},
         (err) => {reject(err);}
       );
     });
@@ -46,7 +46,7 @@ class AssistanceBroker{
   createLog(values){
     return new Promise((resolve, reject) => {
       this.db.query("INSERT INTO assistance_logs (user_id, time, location, activity, status) VALUES (" + values.user + "," + time.getUnixTime().toString() + ",'" + values.location + "','" + values.activity + "','" + values.status + "') RETURNING id").then(
-        (res) => {resolve(res.rows[0].id)},
+        (res) => {resolve(parseInt(res.rows[0].id));},
         (err) => {reject(err);}
       );
     });

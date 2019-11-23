@@ -88,7 +88,7 @@ class PostsBroker {
           db.query("SELECT * FROM users WHERE id = " + row.user_id).then(
             (user_res) => {
               let res = {
-                "id": row.id,
+                "id": parseInt(row.id),
                 "section": row.section,
                 "name": row.name,
                 "user": user_res.rows[0].shown_username,
@@ -103,7 +103,7 @@ class PostsBroker {
                     let c_user_res = await db.returnUserDataFromId(c_row.user_id);
                     res.comments.push(
                       {
-                        "id": c_row.id,
+                        "id": parseInt(c_row.id),
                         "user": c_user_res.shown_username,
                         "comment": c_row.comment
                       }
@@ -149,13 +149,13 @@ class PostsBroker {
               const user_res = await db.query("SELECT * FROM users WHERE id = " + row.user_id);
               if(no_content)
                 l.push({
-                "id": row.id,
+                "id": parseInt(row.id),
                 "section": section,
                 "name": row.name,
                 "user": user_res.rows[0].shown_username,
               });
               else l.push({
-                "id": row.id,
+                "id": parseInt(row.id),
                 "section": section,
                 "name": row.name,
                 "user": user_res.rows[0].shown_username,

@@ -19,7 +19,7 @@ class DatabaseBroker{
 
   returnUserDataFromId(user){
     return new Promise((resolve, reject) => {
-      this.query("SELECT * FROM users WHERE id = " + user + "").then(
+      this.query("SELECT * FROM users WHERE id = " + user).then(
         (result) => {
           if(result.rowCount == 1)
             resolve(result.rows[0]);
