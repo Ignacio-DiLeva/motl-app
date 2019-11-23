@@ -131,7 +131,7 @@
             "section" : "string",
             "name" : "string",
             "user" : "string",
-            "content" : "string/base64",
+            "content" : "string",
             "description" : "string"
           }
         }
@@ -168,7 +168,7 @@
           "section" : "string",
           "name" : "string",
           "user" : "string",
-          "content" : "string/base64",
+          "content" : "string",
           "description" : "string",
           "comments" : [
             {
@@ -255,6 +255,119 @@
         "_code" : [
           "SUCCESS"
         ]
+      }
+    }
+  ],
+  "/chat-discovery" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "user" : "int"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ],
+        "id" : "int",
+        "name" : "string",
+        "users" : "string/[int]",
+        "message_count" : "int"
+      }
+    }
+  ],
+  "/create-chat" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "chat_name" : "string",
+        "users" : "string/[int]"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ],
+        "id" : "int"
+      }
+    }
+  ],
+  "/change-chat-name" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "chat_id" : "int",
+        "chat_name" : "string"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ]
+      }
+    }
+  ],
+  "/add-user" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "chat_id" : "int",
+        "user" : "int"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ]
+      }
+    }
+  ],
+  "/remove-user" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "chat_id" : "int",
+        "user" : "int"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ]
+      }
+    }
+  ],
+  "/submit-message" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "chat_id" : "int",
+        "author" : "int",
+        "content_type" : "string",
+        "content" : "string",
+        "flags" : "string",
+        "file" : "file"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ]
+      }
+    }
+  ],
+  "/get-messages" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "chat_id" : "int"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ],
+        "messages[]" : {
+          "id": "int",
+          "author": "int",
+          "timestamp": "int",
+          "content_type": "string",
+          "content": "string",
+          "flags": "string"
+        }
       }
     }
   ]

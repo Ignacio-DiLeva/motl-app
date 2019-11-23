@@ -159,7 +159,7 @@ function passwordResetSubmit(req, res, next){
   );
 }
 
-app.post('/password-reset-submit', passwordResetSubmit, (req,res) => {});z
+app.post('/password-reset-submit', passwordResetSubmit, (req,res) => {});
 
 app.post('/submit-post', upload.single("file"), (req, res, next) => {
   res.writeHeader(200, {'Content-Type': 'application/json'});

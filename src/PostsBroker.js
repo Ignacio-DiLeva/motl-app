@@ -21,11 +21,11 @@ class PostsBroker {
             let s2 = username2 + "@" + username;
             this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + s1 + "','" + name + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
               (id) => {
-                this.s3Broker.putObject(id.rows[0].id.toString(), content).then(
+                this.s3Broker.putObject("posts/" + id.rows[0].id.toString(), content).then(
                   () => {
                     this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + s2 + "','" + name + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
                       (id2) => {
-                        this.s3Broker.putObject(id2.rows[0].id.toString(), content).then(
+                        this.s3Broker.putObject("posts/" + id2.rows[0].id.toString(), content).then(
                           () => {
                             return resolve("SUCCESS");
                           }
@@ -49,7 +49,7 @@ class PostsBroker {
       else{
         this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + section + "','" + name + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
           (id) => {
-            this.s3Broker.putObject(id.rows[0].id.toString(), content).then(
+            this.s3Broker.putObject("posts/" + id.rows[0].id.toString(), content).then(
               () => {
                 return resolve("SUCCESS");
               }

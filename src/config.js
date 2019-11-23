@@ -33,7 +33,7 @@ config.cookieConfig = {
   secure: true
 }
 
-config.bucketName = 'files.ortenmarcha.ml'
+config.bucketName = 'archivos.ortenmarcha.ml'
 
 config.cookieSecret = "AN9tl1xPQ06mM2Yc"
 
