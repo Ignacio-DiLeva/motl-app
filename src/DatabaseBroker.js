@@ -47,6 +47,30 @@ class DatabaseBroker{
     });
   }
 
+  idToShownUsername(id){
+    return new Promise((resolve, reject) => {
+      this.returnUserDataFromId(id).then(
+        (data) => {resolve(data.shown_username);},
+        (err) => {reject(err);}
+      );
+    });
+  }
+
+  shownUsernameToIds(username){
+    return new Promise((resolve, reject) => {
+        this.query("SELECT * FROM users WHERE shown_username = '" + username + "'").then(
+          (data) => {
+            let ids = [];
+            data.rows.forEach((row) => {
+              ids.push(parseInt(row.id));
+            });
+            resolve(ids);
+          },
+          (err) => {reject(err);}
+        );
+    });
+  }
+
   checkStr(str){
     if (typeof(str) != 'string') return false;
     return config.strRegexFull.test(str);

@@ -130,7 +130,8 @@
             "id" : "int",
             "section" : "string",
             "name" : "string",
-            "user" : "string",
+            "author" : "string",
+            "user" : "int",
             "content" : "string",
             "description" : "string"
           }
@@ -167,13 +168,15 @@
           "id" : "int",
           "section" : "string",
           "name" : "string",
-          "user" : "string",
+          "author" : "string",
+          "user" : "int",
           "content" : "string",
           "description" : "string",
           "comments" : [
             {
               "id" : "int",
-              "user" : "string",
+              "author" : "string",
+              "user" : "int",
               "comment" : "string"
             }
           ]
@@ -337,7 +340,7 @@
       "method" : "POST",
       "expects" : {
         "chat_id" : "int",
-        "author" : "int",
+        "user" : "int",
         "content_type" : "string",
         "content" : "string",
         "flags" : "string",
@@ -362,12 +365,106 @@
         ],
         "messages[]" : {
           "id": "int",
-          "author": "int",
+          "author": "string",
+          "user" : "int",
           "timestamp": "int",
           "content_type": "string",
           "content": "string",
           "flags": "string"
         }
+      }
+    }
+  ],
+  "/find-users" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "username" : "string"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ],
+        "users[]" : {
+          "id" : "int",
+          "username" : "string",
+          "shown_username" : "string"
+        }
+      }
+    }
+  ],
+  "/id-to-shown-username"  :[
+    {
+      "method" : "POST",
+      "expects" : {
+        "id" : "int"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ],
+        "shown_username" : "string"
+      }
+    }
+  ],
+  "/shown-username-to-ids" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "id" : "int"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ],
+        "ids" : "[int]" 
+      }
+    }
+  ],
+  "download-profile" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "id": "int"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ],
+        "username" : "string",
+        "shown_username" : "string",
+        "email" : "string",
+        "phone" : "string",
+        "user_type" : "string",
+        "room" : "int",
+        "roommates" : "string",
+        "health_info" : "string",
+        "group" : "int"
+      }
+    }
+  ],
+  "update-profile" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "id": "int",
+        "username" : "string",
+        "password" : "string",
+        "shown_username" : "string",
+        "email" : "string",
+        "phone" : "string",
+        "user_type" : "string",
+        "room" : "int",
+        "roommates" : "string",
+        "health_info" : "string",
+        "group" : "int",
+        "upload_image" : "boolean",
+        "file" : "file"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ]
       }
     }
   ]

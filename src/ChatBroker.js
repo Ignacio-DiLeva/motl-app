@@ -47,9 +47,11 @@ class ChatBroker{
           for(let i = 0; i < result_messages_fixed.length; i++){
             let message = await db.query("SELECT * from messages WHERE id = " + result_messages_fixed[i].toString());
             let message_data = message.rows[0];
+            let author_name = await db.idToShownUsername(message_data.author);
             messages.push({
               "id" : parseInt(message_data.id),
-              "author" : parseInt(message_data.author),
+              "author" : author_name,
+              "user" : parseInt(message_data.author),
               "timestamp" : parseInt(message_data.timestamp),
               "content_type" : message_data.content_type,
               "content" : message_data.content,

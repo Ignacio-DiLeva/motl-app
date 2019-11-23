@@ -16,6 +16,7 @@ const passwordResetSubmitBroker = require("./PasswordResetSubmitBroker");
 const assistanceBroker = require("./AssistanceBroker");
 const postBroker = require("./PostsBroker");
 const chatBroker = require("./ChatBroker");
+const profileBroker = require("./ProfileBroker");
 
 AWS.config.update({region: 'us-east-1'});
 var app = express();
@@ -337,7 +338,7 @@ app.post('/submit-message', upload.single("file"), (req, res, next) => {
       if(err)
         res.end(JSON.stringify({'_code' : err}));
       else{
-        chatBroker.submitMessage(req.body.chat_id,req.body.author,req.body.content_type,data,req.body.flags).then(
+        chatBroker.submitMessage(req.body.chat_id,req.body.user,req.body.content_type,data,req.body.flags).then(
           () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
           (err) => {res.end(JSON.stringify({'_code' : err}));}
         );
@@ -345,7 +346,94 @@ app.post('/submit-message', upload.single("file"), (req, res, next) => {
     });
   }
   else{
-    chatBroker.submitMessage(req.body.chat_id,req.body.author,req.body.content_type,req.body.content,req.body.flags).then(
+    chatBroker.submitMessage(req.body.chat_id,req.body.user,req.body.content_type,req.body.content,req.body.flags).then(
+      () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+      (err) => {res.end(JSON.stringify({'_code' : err}));}
+    );
+  }
+});
+
+function findUsers(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  profileBroker.nameSeach(req.body.username).then(
+    (data) => {res.end(JSON.stringify({'_code' : "SUCCESS", "users" : data}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/find-users", findUsers, (req, res) => {});
+
+function idToShownUsername(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  profileBroker.idToShownUsername(req.body.id).then(
+    (data) => {res.end(JSON.stringify({'_code' : "SUCCESS", "shown_username" : data}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+function shownUsernameToIds(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  profileBroker.shownUsernameToIds(req.body.username).then(
+    (data) => {res.end(JSON.stringify({'_code' : "SUCCESS", "ids" : data}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/id-to-shown-username", idToShownUsername, (req, res) => {});
+app.post("/shown-username-to-ids", shownUsernameToIds, (req, res) => {});
+
+function downloadProfile(req,res,next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  profileBroker.downloadProfile(req.body.id).then(
+    (data) => {res.end(JSON.stringify({'_code' : "SUCCESS", "data" : data}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/download-profile", downloadProfile, (req, res) => {});
+
+app.post('/update-profile', upload.single("file"), (req, res, next) => {
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  if(req.body.upload_image != undefined && (req.body.upload_image == true || req.body.upload_image == "true")){
+    fs.readFile(req.file.path, (err, data) => {
+      if(err)
+        res.end(JSON.stringify({'_code' : err}));
+      else{
+        profileBroker.updateProfile(
+          req.body.id,
+          req.body.username,
+          req.body.password,
+          req.body.shown_username,
+          req.body.email,
+          req.body.phone,
+          req.body.user_type,
+          req.body.room,
+          req.body.roommates,
+          req.body.health_info,
+          req.body.group,
+          data
+        ).then(
+          () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+          (err) => {res.end(JSON.stringify({'_code' : err}));}
+        );
+      }
+    });
+  }
+  else{
+    profileBroker.updateProfile(
+      req.body.id,
+      req.body.username,
+      req.body.password,
+      req.body.shown_username,
+      req.body.email,
+      req.body.phone,
+      req.body.user_type,
+      req.body.room,
+      req.body.roommates,
+      req.body.health_info,
+      req.body.group,
+      null
+    ).then(
       () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
       (err) => {res.end(JSON.stringify({'_code' : err}));}
     );

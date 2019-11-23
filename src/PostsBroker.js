@@ -85,13 +85,14 @@ class PostsBroker {
       this.db.query("SELECT * FROM posts WHERE id = " + post_id).then(
         (result) => {
           let row = result.rows[0];
-          db.query("SELECT * FROM users WHERE id = " + row.user_id).then(
+          this.db.returnUserDataFromId(row.user_id).then(
             (user_res) => {
               let res = {
                 "id": parseInt(row.id),
                 "section": row.section,
                 "name": row.name,
-                "user": user_res.rows[0].shown_username,
+                "author": user_res.shown_username,
+                "user" : parseInt(user_res.id),
                 "content": row.content,
                 "description": row.description,
                 "comments": []
@@ -104,7 +105,8 @@ class PostsBroker {
                     res.comments.push(
                       {
                         "id": parseInt(c_row.id),
-                        "user": c_user_res.shown_username,
+                        "author": c_user_res.shown_username,
+                        "user": parseInt(c_row.user_id),
                         "comment": c_row.comment
                       }
                     );
@@ -146,19 +148,21 @@ class PostsBroker {
           for(let i = 0; i < result.rowCount; i++){
             let row = result.rows[i];
             try {
-              const user_res = await db.query("SELECT * FROM users WHERE id = " + row.user_id);
+              const user_res = await this.db.returnUserDataFromId(row.user_id);
               if(no_content)
                 l.push({
                 "id": parseInt(row.id),
                 "section": section,
                 "name": row.name,
-                "user": user_res.rows[0].shown_username,
+                "author": user_res.shown_username,
+                "user" : parseInt(user_res.id)
               });
               else l.push({
                 "id": parseInt(row.id),
                 "section": section,
                 "name": row.name,
-                "user": user_res.rows[0].shown_username,
+                "author": user_res.shown_username,
+                "user" : parseInt(user_res.id),
                 "content": row.content,
                 "description": row.description
               });
