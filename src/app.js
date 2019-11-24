@@ -115,13 +115,13 @@ function login(req, res, next){
 app.post('/login', login, (req,res) => {});
 
 function register(req, res, next){
-  registerBroker.register(req.body.username, req.body.shown_username, req.body.password, req.body.email, req.body.phone, req.body.code).then(
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  registerBroker.register(req.body.username, req.body.shown_username, req.body.password,
+    req.body.email, req.body.phone, req.body.code).then(
     (user_data) => {
-      res.writeHeader(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify({'_code' : "SUCCESS", "id":user_data.id}));
     },
     (err) => {
-      res.writeHeader(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify({'_code' : err.toString()}));
     }
   );

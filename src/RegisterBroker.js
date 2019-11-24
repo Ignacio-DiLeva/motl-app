@@ -39,7 +39,7 @@ class RegisterBroker{
                     this.db.query("SELECT * FROM init_config WHERE code = '" + code + "'").then(
                       (code_data) => {
                         if((code_data.rowCount == 0 || (!code_data.rows[0].code_reus && code_data.rows[0].code_uses > 0)) && using_code){
-                          reject("INVALID_CODE");
+                          reject("ERROR_INVALID_CODE");
                         }
                         else{
                           let registerQuery = "INSERT INTO users (username, shown_username, password, session_ids, email, phone, chats, permissions_id, password_reset_id) VALUES ('" + user + "','" + shownUser +"','" + hash + "',array[]::bigint[],'" + email + "','" + phone + "',array[]::bigint[]," + config.permissions.USER + ",0) RETURNING id";

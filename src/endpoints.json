@@ -19,7 +19,7 @@
         "password" : "string",
         "email" : "string",
         "phone" : "string",
-        "code" : "int"
+        "code" : "string"
       },
       "returns" : {
         "_code" : [
@@ -31,7 +31,8 @@
           "ERROR_BAD_PASSWORD",
           "ERROR_BAD_EMAIL",
           "ERROR_BAD_PHONE",
-          "ERROR_USER_ALREADY_LOGGED_IN"
+          "ERROR_USER_ALREADY_LOGGED_IN",
+          "ERROR_INVALID_CODE"
         ],
         "id" : "int"
       }
