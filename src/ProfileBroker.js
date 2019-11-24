@@ -75,7 +75,7 @@ class ProfileBroker {
             "room" : parseInt(res.room),
             "roommates" : res.roommates,
             "health_info" : res.health_info,
-            "group" : parseInt(res.group)
+            "group" : parseInt(res.group_code)
             }
           );
         },
@@ -111,7 +111,7 @@ class ProfileBroker {
         this.db.query("UPDATE users SET health_info = '" + health_info + "' WHERE id = " + id);
       }
       if(group != undefined){
-        this.db.query("UPDATE users SET room = " + group.toString() + " WHERE id = " + group);
+        this.db.query("UPDATE users SET group_code = " + group.toString() + " WHERE id = " + group);
       }
       if(password != undefined){
         crypto.hash(password).then(

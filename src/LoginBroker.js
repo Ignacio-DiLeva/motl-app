@@ -1,7 +1,6 @@
 "use strict";
 let db = require('./DatabaseBroker');
 let crypto = require("./CryptoBroker");
-let cookieBroker = require("./CookieBroker");
 let config = require('./config');
 
 class LoginBroker{
@@ -21,12 +20,7 @@ class LoginBroker{
             crypto.checkHashMatch(data.password, password).then(
               (passwordCheck) => {
                 if(passwordCheck){
-                  /*cookieBroker.setCookie(user, cookie).then(
-                    (cookie) => {resolve({"cookie": cookie, "id":parseInt(data.id)});},
-                    (err) => {reject(err);}
-                  );
-                  */
-                 resolve({"id":parseInt(data.id)});
+                  resolve({"id":parseInt(data.id)});
                 }
                 else{
                   reject("ERROR_PASSWORD_INCORRECT");

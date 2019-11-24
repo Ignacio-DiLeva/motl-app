@@ -9,7 +9,7 @@ class AssistanceBroker{
 
   listLogs(user){
     return new Promise((resolve, reject) => {
-      this.db.query("SELECT * FROM assistance_logs WHERE user_id = " + user).then(
+      this.db.query("SELECT * FROM assistance_logs WHERE user_id = " + user + "ORDER BY time DESC").then(
         (res) => {
           let result = [];
           res.rows.forEach((row) => {

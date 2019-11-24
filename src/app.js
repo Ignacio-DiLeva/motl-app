@@ -115,15 +115,8 @@ function login(req, res, next){
 app.post('/login', login, (req,res) => {});
 
 function register(req, res, next){
-  /*
-  if(!!req.cookies["ORT_MOTL_APP"]){
-    res.writeHeader(200, {'Content-Type': 'application/json'});
-    res.end(JSON.stringify({'_code' : "ERROR_USER_ALREADY_LOGGED_IN"}));
-  }
-  */
-  registerBroker.register(req.body.username, req.body.shown_username, req.body.password, req.body.email, req.body.phone).then(
+  registerBroker.register(req.body.username, req.body.shown_username, req.body.password, req.body.email, req.body.phone, req.body.code).then(
     (user_data) => {
-      //res.cookie("ORT_MOTL_APP", user_data.cookie, config.cookieConfig);
       res.writeHeader(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify({'_code' : "SUCCESS", "id":user_data.id}));
     },

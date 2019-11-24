@@ -1,7 +1,12 @@
 "use strict";
 let nodemailer = require('nodemailer');
+let fs = require("fs");
 
 var config = {};
+
+config.dp_image_loc = "files/default_profile_image.jpg";
+
+config.default_profile_image = fs.readFileSync(config.dp_image_loc);
 
 config.connData = {
   user: 'postgres',
