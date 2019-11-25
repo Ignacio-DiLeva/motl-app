@@ -108,9 +108,9 @@ class ChatBroker{
   submitMessage(chat_id, author, content_type, content, flags){
     return new Promise((resolve, reject) => {
       let timestamp = time.getUnixTime();
-      let q = "INSERT INTO messages (author, timestamp, content_type, content, flags) VALUES ('" + author + "', " + timestamp.toString() + ", '" + content_type + "', '" + "" + "', '" + flags + "') RETURNING id";
+      let q = "INSERT INTO messages (author, timestamp, content_type, content, flags) VALUES (" + author.toString() + ", " + timestamp.toString() + ", '" + content_type + "', '" + "" + "', '" + flags + "') RETURNING id";
       if(content_type === "text")
-        q = "INSERT INTO messages (author, timestamp, content_type, content, flags) VALUES ('" + author + "', " + timestamp.toString() + ", 'text', '" + content + "', '" + flags + "') RETURNING id";
+        q = "INSERT INTO messages (author, timestamp, content_type, content, flags) VALUES (" + author.toString() + ", " + timestamp.toString() + ", 'text', '" + content + "', '" + flags + "') RETURNING id";
       this.db.query(q).then(
         (res) => {
           let m_id = res.rows[0].id;
