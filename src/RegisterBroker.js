@@ -60,7 +60,7 @@ class RegisterBroker{
                                         () => {reject(err);}
                                       );
                                     }
-                                    this.db.query("UPDATE users SET code = '" + code + "', group_code = " + code_data.rows[0].group_code.toString() + ", user_type = '" + code_data.rows[0].user_type + "' WHERE id = " + user_data.rows[0].id.toString()).then(
+                                    this.db.query("UPDATE users SET code = '" + code + "', group_number = " + code_data.rows[0].group_number.toString() + ", user_type = '" + code_data.rows[0].user_type + "' WHERE id = " + user_data.rows[0].id.toString()).then(
                                       () => {
                                         this.db.query("UPDATE init_config SET cant_uses = " + code_uses.toString() + " WHERE code = '" + code + "'").then(
                                           () => {resolve({"id":parseInt(user_data.rows[0].id)});},

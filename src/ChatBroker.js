@@ -89,7 +89,8 @@ class ChatBroker{
         users = JSON.parse(users);
       }
       let timestamp = time.getUnixTime();
-      this.db.query("INSERT INTO chats (name, users, messages, timestamp_created, timestamp_last_message) VALUES ('" + name + "', " + "ARRAY[" + users.join(", ") + "], array[]::bigint[], " + timestamp.toString() + ", " + timestamp.toString() + ") RETURNING id").then(
+      let q = "INSERT INTO chats (name, users, messages, timestamp_created, timestamp_last_message) VALUES ('" + name + "', " + "array[" + users.join(", ") + "]::bigint[], array[]::bigint[], " + timestamp.toString() + ", " + timestamp.toString() + ") RETURNING id";
+      this.db.query(q).then(
         (res) => {resolve(parseInt(res.rows[0].id));},
         (err) => {reject(err);} 
       );

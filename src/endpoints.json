@@ -469,6 +469,15 @@
         ]
       }
     }
+  ],
+  "/submit-calendar" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "file" : "file",
+        "group"  : "int"
+      }
+    }
   ]
 }
 

@@ -1,5 +1,6 @@
 "use strict";
 let config = require('./config');
+let mailcheck = require("email-existence")
 const { Client } = require('pg');
 
 class DatabaseBroker{
@@ -87,8 +88,12 @@ class DatabaseBroker{
   }
 
   checkEmail(str){
-    if (typeof(str) != 'string') return false;
-    return config.emailRegexFull.test(str);
+    if (typeof(str) != 'string' || !config.emailRegexFull.test(str)) return false;
+    /*mailcheck.check(str, (err, res) => {
+      if(err) return false;
+      return res;
+    });*/
+    return true;
   }
 
   checkPhone(str){

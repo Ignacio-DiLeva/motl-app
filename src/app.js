@@ -17,6 +17,7 @@ const assistanceBroker = require("./AssistanceBroker");
 const postBroker = require("./PostsBroker");
 const chatBroker = require("./ChatBroker");
 const profileBroker = require("./ProfileBroker");
+const calendarBroker = require("./CalendarBroker");
 
 AWS.config.update({region: 'us-east-1'});
 var app = express();
@@ -432,5 +433,29 @@ app.post('/update-profile', upload.single("file"), (req, res, next) => {
     );
   }
 });
+
+app.post('/submit-calendar', upload.single("file"), (req, res, next) => {
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  fs.readFile(req.file.path, (err, data) => {
+    if(err)
+      res.end(JSON.stringify({'_code' : err}));
+    else{
+      calendarBroker.uploadCalendar(data, req.body.group).then(
+        () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+        (err) => {res.end(JSON.stringify({'_code' : err}));}
+      );
+    }
+  });
+});
+
+function groupWizard(req, res, next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  profileBroker.groupWizard(req.body.chat_user, req.body.chat_admin, req.body.chat_all, true).then(
+    (data) => {res.end(JSON.stringify(data));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/group-wizard", groupWizard, (req, res) => {});
 
 app.listen(80);

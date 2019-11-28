@@ -8,6 +8,10 @@ config.dp_image_loc = "files/default_profile_image.jpg";
 
 config.default_profile_image = fs.readFileSync(config.dp_image_loc);
 
+config.calendar_loc = "files/default_calendar.json";
+
+config.default_calendar = fs.readFileSync(config.calendar_loc);
+
 config.connData = {
   user: 'postgres',
   host: 'db.ortenmarcha.ml',
@@ -38,7 +42,7 @@ config.cookieConfig = {
   secure: true
 }
 
-config.bucketName = 'archivos.ortenmarcha.ml'
+config.bucketName = 'downloads.ortenmarcha.ml'
 
 config.cookieSecret = "AN9tl1xPQ06mM2Yc"
 
