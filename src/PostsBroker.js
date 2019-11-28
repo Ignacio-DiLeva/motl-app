@@ -9,7 +9,7 @@ class PostsBroker {
     this.s3Broker = s3;
   }
 
-  submitPost(section, name, user, content, description) {
+  submitPost(section, content_type, user, content, description) {
     return new Promise((resolve, reject) => {
       //content = '' in S3 update
       if(section.charAt(0) == "@"){
@@ -19,11 +19,11 @@ class PostsBroker {
             let username2 = section.substring(1);
             let s1 = username + "@" + username2;
             let s2 = username2 + "@" + username;
-            this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + s1 + "','" + name + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
+            this.db.query("INSERT INTO posts (section, content_type, user_id, content, comments, description) VALUES ('" + s1 + "','" + content_type + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
               (id) => {
                 this.s3Broker.putObject("posts/" + id.rows[0].id.toString(), content).then(
                   () => {
-                    this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + s2 + "','" + name + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
+                    this.db.query("INSERT INTO posts (section, content_type, user_id, content, comments, description) VALUES ('" + s2 + "','" + content_type + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
                       (id2) => {
                         this.s3Broker.putObject("posts/" + id2.rows[0].id.toString(), content).then(
                           () => {
@@ -47,7 +47,7 @@ class PostsBroker {
         );
       }
       else{
-        this.db.query("INSERT INTO posts (section, name, user_id, content, comments, description) VALUES ('" + section + "','" + name + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
+        this.db.query("INSERT INTO posts (section, content_type, user_id, content, comments, description) VALUES ('" + section + "','" + content_type + "'," + user + ",'" + '' + "',array[]::bigint[],'" + description + "') RETURNING id").then(
           (id) => {
             this.s3Broker.putObject("posts/" + id.rows[0].id.toString(), content).then(
               () => {
@@ -90,7 +90,7 @@ class PostsBroker {
               let res = {
                 "id": parseInt(row.id),
                 "section": row.section,
-                "name": row.name,
+                "content_type": row.content_type,
                 "author": user_res.shown_username,
                 "user" : parseInt(user_res.id),
                 "content": row.content,
@@ -123,9 +123,9 @@ class PostsBroker {
     });
   }
 
-  getPostBySectionAndName(section, name) {
+  getPostBySectionAndType(section, content_type) {
     return new Promise((resolve, reject) => {
-      this.db.query("SELECT * FROM posts WHERE section='" + section + "' AND name='" + name + "'").then(
+      this.db.query("SELECT * FROM posts WHERE section='" + section + "' AND content_type ='" + content_type + "'").then(
         (result) => {
           if (result.rowCount == 0) {
             return resolve(null);
@@ -153,14 +153,14 @@ class PostsBroker {
                 l.push({
                 "id": parseInt(row.id),
                 "section": section,
-                "name": row.name,
+                "content_type": row.content_type,
                 "author": user_res.shown_username,
                 "user" : parseInt(user_res.id)
               });
               else l.push({
                 "id": parseInt(row.id),
                 "section": section,
-                "name": row.name,
+                "content_type": row.content_type,
                 "author": user_res.shown_username,
                 "user" : parseInt(user_res.id),
                 "content": row.content,
@@ -216,6 +216,29 @@ class PostsBroker {
           }
         );
       }
+    });
+  }
+
+  updatePost(post_id, content_type, file, desc){
+    return new Promise((resolve, reject) => {
+      this.db.query("UPDATE posts SET description = '" + desc + "', content_type = '" + content_type + "' WHERE id = " + post_id,toString()).then(
+        () => {
+          this.s3Broker.putObject("posts/" + post_id.toString(), file).then(
+            () => {resolve("SUCCESS");},
+            (err) => {reject(err);}
+          );
+        },
+        (err) => {reject(err);}
+      );
+    });
+  }
+
+  deletePost(post_id) {
+    return new Promise((resolve, reject) => {
+      this.db.query("DELETE FROM posts WHERE id = " + post_id).then(
+        () => {resolve("SUCCESS");},
+        (err) => {reject(err);}
+      );
     });
   }
 }

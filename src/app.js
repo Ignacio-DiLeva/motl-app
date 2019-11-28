@@ -162,13 +162,37 @@ app.post('/submit-post', upload.single("file"), (req, res, next) => {
     if(err)
       res.end(JSON.stringify({'_code' : err}));
     else{
-      postBroker.submitPost(req.body.section,req.body.name,req.body.user,data, req.body.description).then(
+      postBroker.submitPost(req.body.section,req.body.content_type,req.body.user,data, req.body.description).then(
         () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
         (err) => {res.end(JSON.stringify({'_code' : err}));}
       );
     }
   });
 });
+
+app.post('/update-post', upload.single("file"), (req, res, next) => {
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  fs.readFile(req.file.path, (err, data) => {
+    if(err)
+      res.end(JSON.stringify({'_code' : err}));
+    else{
+      postBroker.updatePost(req.body.post_id, req.body.content_type, data, req.body.description).then(
+        () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+        (err) => {res.end(JSON.stringify({'_code' : err}));}
+      );
+    }
+  });
+});
+
+function deletePost(req, res, next){
+  res.writeHeader(200, {'Content-Type': 'application/json'});
+  postBroker.deletePost(req.body.post_id).then(
+    () => {res.end(JSON.stringify({'_code' : "SUCCESS"}));},
+    (err) => {res.end(JSON.stringify({'_code' : err}));}
+  );
+}
+
+app.post("/delete-post", deletePost, (req, res) => {});
 
 
 function submitComment(req,res,next){

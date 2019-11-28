@@ -100,7 +100,7 @@
       "method" : "POST",
       "expects" : {
         "section" : "string",
-        "name" : "string/null",
+        "content_type" : "string/null",
         "description" : "string",
         "user" : "int/id",
         "file" : "file"
@@ -131,7 +131,7 @@
           "posts[]" : {
             "id" : "int",
             "section" : "string",
-            "name" : "string",
+            "content_type" : "string",
             "author" : "string",
             "user" : "int",
             "content" : "string",
@@ -169,7 +169,7 @@
         "posts[]" : {
           "id" : "int",
           "section" : "string",
-          "name" : "string",
+          "content_type" : "string",
           "author" : "string",
           "user" : "int",
           "content" : "string",
@@ -476,6 +476,35 @@
       "expects" : {
         "file" : "file",
         "group"  : "int"
+      }
+    }
+  ],
+  "/update-post" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "file" : "file",
+        "content_type" : "string",
+        "post_id" : "int",
+        "description" : "string"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ]
+      }
+    }
+  ],
+  "/delete-post" : [
+    {
+      "method" : "POST",
+      "expects" : {
+        "post_id" : "int"
+      },
+      "returns" : {
+        "_code" : [
+          "SUCCESS"
+        ]
       }
     }
   ]
