@@ -35,7 +35,7 @@ class RegisterBroker{
                     reject("ERROR_INTERNAL_HASH_NOT_STRING");
                   else{
                     let using_code = true;
-                    if(code == undefined) {code = ""; using_code = false}
+                    if(code == undefined || code == null || code == "") {code = ""; using_code = false}
                     this.db.query("SELECT * FROM init_config WHERE code = '" + code + "'").then(
                       (code_data) => {
                         if((code_data.rowCount == 0 || (!code_data.rows[0].code_reus && code_data.rows[0].code_uses > 0)) && using_code){
